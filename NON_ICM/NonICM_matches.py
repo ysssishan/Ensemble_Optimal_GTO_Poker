@@ -19,16 +19,16 @@ env = LeducholdemEnv(
 
 # %%
 # Load pretrained agents
-NonICM_EA_mccfr_agent = NonICM_EA_MCCFR_Agent(env, model_path='./NonICM_EA_mccfr_agent')
-NonICM_EA_mccfr_agent.load()
-NonICM_TA_mccfr_agent = NonICM_TA_MCCFR_Agent(env, model_path='./NonICM_TA_mccfr_agent')
-NonICM_TA_mccfr_agent.load()
+nonicm_ea_mccfr_agent = NonICM_EA_MCCFR_Agent(env, model_path='./nonicm_ea_mccfr_agent')
+nonicm_ea_mccfr_agent.load()
+nonicm_ta_mccfr_agent = NonICM_TA_MCCFR_Agent(env, model_path='./nonicm_ta_mccfr_agent')
+nonicm_ta_mccfr_agent.load()
 
 # %%
 # set agents
 env.set_agents([
-    NonICM_EA_mccfr_agent,
-    NonICM_TA_mccfr_agent,
+    nonicm_ea_mccfr_agent,
+    nonicm_ta_mccfr_agent,
     ])
 
 print(">> Pre-trained model")
