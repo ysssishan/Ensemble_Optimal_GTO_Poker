@@ -4,6 +4,12 @@ import numpy as np
 import pandas as pd
 import os
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+
+# %%
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # %%
 from Basic_Leduc_Game import LeducholdemGame
@@ -34,7 +40,7 @@ env = LeducholdemEnv(
 nonicm_ea_mccfr_agent = NonICM_EA_MCCFR_Agent(env,init_chipstack_pair=np.array([1000.0, 1000.0]),small_blind_multiplier=2)
 
 # Train CFR Agent
-num_iterations = 10000
+num_iterations = 50000
 train(nonicm_ea_mccfr_agent, num_iterations)
 
 # Save
@@ -67,3 +73,5 @@ average_policy_df.head(10)
 
 
 
+
+# %%

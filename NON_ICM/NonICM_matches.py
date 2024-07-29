@@ -2,8 +2,15 @@
 import numpy as np
 import pandas as pd
 import pickle
+import seaborn as sns
 import matplotlib.pyplot as plt
 
+# %%
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# %%
 from Basic_Leduc_Game import LeducholdemGame
 from Game_Env import LeducholdemEnv
 from NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
@@ -45,8 +52,8 @@ TA_cumulative_wealth_list = []
 EA_wealth = []
 TA_wealth = []
 EA_wins = 0
-EA_cumulative_wealth = 0
-TA_cumulative_wealth = 0
+EA_cumulative_wealth = 1000
+TA_cumulative_wealth = 1000
 
 for i in range(iteration):
     while (True):
@@ -105,3 +112,4 @@ plt.title('Cumulative Wealth of EA and TA Over Iterations')
 plt.legend()
 plt.grid(True)
 plt.show()
+# %%
