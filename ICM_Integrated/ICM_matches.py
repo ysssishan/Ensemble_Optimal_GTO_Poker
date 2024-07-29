@@ -51,10 +51,10 @@ print(">> Pre-trained model")
 # %%
 # Setting
 # Total number of matches simulation
-total_iterations = 100
+total_iterations = 20
 
 # Competition hands in one match
-hands_per_iteration = 100
+hands_per_iteration = 5000
 
 # Initialize lists to store results of each full iteration
 all_EA_wealth_list = []
@@ -82,6 +82,7 @@ for iteration in tqdm(range(total_iterations), desc="Total Iterations"):
     # Initialize small blind
     small_blind = 1
     env.game.small_blind = small_blind
+    env.game.big_blind = 2*env.game.small_blind
 
     # Inner loop with progress bar
     for hand in tqdm(range(hands_per_iteration), desc=f"Iteration {iteration + 1}", leave=False):
@@ -103,7 +104,7 @@ for iteration in tqdm(range(total_iterations), desc="Total Iterations"):
         TA_wealth_list.append(TA_wealth)
 
         # Double the small blind
-        small_blind *= 1.1
+        small_blind *= 1.05
         env.game.small_blind = small_blind
 
         # Check if match should end
@@ -163,3 +164,28 @@ plt.show()
 # else:
 #     print(f"❌ Time-average strategy is not more optimal than Ensemble-average.")
 
+
+print(all_EA_wins)
+print(all_TA_wins)
+# %%
+
+print(sum(all_EA_wins))
+print(sum(all_TA_wins))
+# %%
+
+# 转换为 numpy 数组以方便计算
+wins_a = np.array(all_EA_wins)
+wins_b = np.array(all_TA_wins)
+
+# 计算每轮比赛的总胜利次数
+total_wins = wins_a + wins_b
+
+# 计算胜率
+win_rate_a = wins_a / total_wins
+win_rate_b = wins_b / total_wins
+
+# 打印结果
+print("Player A 平均胜率：", np.sum(win_rate_a)/len(win_rate_a))
+print("Player B 平均胜率：", np.sum(win_rate_b)/len(win_rate_b))
+
+# %%

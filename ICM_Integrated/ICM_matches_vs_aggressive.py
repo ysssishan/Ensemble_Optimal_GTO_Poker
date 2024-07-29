@@ -16,8 +16,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # %%
 from Basic_Leduc_Game import LeducholdemGame
 from Game_Env import LeducholdemEnv
-from ICM
-from ICM_TA_MCCFR_Agent import ICM_TA_MCCFR_Agent
+from ICM_EA_Aggressive_Agent import ICM_EA_AggressiveAgent
+from ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
 
 
 # %% [markdown]
@@ -30,17 +30,38 @@ env = LeducholdemEnv(
             'seed':42})
 
 # %%
-# Load pretrained agents
+# Train and load aggressive agents
+def train(agent, num_iterations):
+
+    with tqdm(total=num_iterations, desc="Training Progress") as pbar:
+        for i in range(num_iterations):
+            agent.train()
+            agent.reset_chipstack()
+            agent.env.game.small_blind = 1
+            agent.env.game.big_blind = 2*agent.env.game.small_blind
+            
+            pbar.set_postfix({"Iteration": i + 1}, refresh=True)
+            pbar.update(1)
+
+icm_ea_agg_agent = ICM_EA_AggressiveAgent(env, 
+                                          model_path='./icm_ea_aggresive_agent',
+                                          init_chipstack_pair=np.array([1000.0, 1000.0]), 
+                                          small_blind_multiplier=2
+                                          )
+num_iterations = 50000
+train(icm_ea_agg_agent, num_iterations)
+
+icm_ea_agg_agent.load()
+
+# %%
 icm_ea_mccfr_agent = ICM_EA_MCCFR_Agent(env, model_path='./icm_ea_mccfr_agent')
 icm_ea_mccfr_agent.load()
-icm_ta_mccfr_agent = ICM_TA_MCCFR_Agent(env, model_path='./icm_ta_mccfr_agent')
-icm_ta_mccfr_agent.load()
 
 # %%
 # set agents
 env.set_agents([
+    icm_ea_agg_agent,
     icm_ea_mccfr_agent,
-    icm_ta_mccfr_agent,
     ])
 print(">> Pre-trained model")
 
@@ -51,7 +72,7 @@ print(">> Pre-trained model")
 # %%
 # Setting
 # Total number of matches simulation
-total_iterations = 100
+total_iterations = 1000
 
 # Competition hands in one match
 hands_per_iteration = 100
@@ -103,7 +124,7 @@ for iteration in tqdm(range(total_iterations), desc="Total Iterations"):
         TA_wealth_list.append(TA_wealth)
 
         # Double the small blind
-        small_blind *= 1.1
+        small_blind *= 2
         env.game.small_blind = small_blind
 
         # Check if match should end
@@ -123,12 +144,12 @@ for iteration in tqdm(range(total_iterations), desc="Total Iterations"):
 
 plt.figure()
 for i, sublist in enumerate(all_EA_wealth_list):
-    plt.plot(sublist, color='blue', marker='o', linestyle='-',alpha=0.5)
+    plt.plot(sublist, color='blue', marker='o', linestyle='-',alpha=0.1)
 
 plt.title('Cumulative Wealth of Ensemble-average strategy')
 plt.xlabel('iteration')
 plt.ylabel('cumulated wealth')
-plt.xlim(0, 100)
+plt.xlim(0, 10)
 plt.ylim(0, 2000)
 
 # 显示图形
@@ -139,12 +160,12 @@ plt.show()
 
 plt.figure()
 for i, sublist in enumerate(all_TA_wealth_list):
-    plt.plot(sublist, color='red', marker='o', linestyle='-',alpha=0.5)
+    plt.plot(sublist, color='red', marker='o', linestyle='-',alpha=0.1)
 
 plt.title('Cumulative Wealth of Time-average strategy')
 plt.xlabel('iteration')
 plt.ylabel('cumulated wealth')
-plt.xlim(0, 100)
+plt.xlim(0, 10)
 plt.ylim(0, 2000)
 
 # 显示图形

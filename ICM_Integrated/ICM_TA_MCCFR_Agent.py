@@ -299,11 +299,17 @@ class ICM_TA_MCCFR_Agent():
             action (int): Predicted action
             info (dict): A dictionary containing information
         '''
-        probs = self.action_probs(state['obs'].tostring(), list(state['legal_actions'].keys()), self.average_policy)
+        obs_str = json.dumps({'obs': state['obs'].tolist(), 'action_record': state['action_record']})
+        probs = self.action_probs(obs_str, list(state['legal_actions'].keys()), self.average_policy)
         action = np.random.choice(len(probs), p=probs)
         info = {}
         info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
         return action, info
+        # probs = self.action_probs(state['obs'].tostring(), list(state['legal_actions'].keys()), self.average_policy)
+        # action = np.random.choice(len(probs), p=probs)
+        # info = {}
+        # info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
+        # return action, info
 
     """Get state_str of the player, the information set"""
     def get_state(self, player_id):
