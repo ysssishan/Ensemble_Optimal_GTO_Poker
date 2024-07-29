@@ -1,0 +1,34 @@
+# %%
+import numpy as np
+import json
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from ICM_TA_MCCFR_Agent import ICM_TA_MCCFR_Agent
+
+
+class ICM_TA_AggressiveAgent(ICM_TA_MCCFR_Agent):
+
+    def action_probs(self, obs, legal_actions, policy):
+        obs_array = np.array(json.loads(obs)['obs'])
+        # K: [0, 0, 1], Q: [0, 1, 0], J: [1, 0, 0]
+        if (obs_array == [0, 0, 1]).all():  # K
+            if 2 in legal_actions:  # Raise action is 2
+                action_probs = np.zeros(self.env.num_actions)
+                action_probs[2] = 1.0
+                return action_probs
+        elif (obs_array == [0, 1, 0]).all():  # Q
+            action_probs = np.zeros(self.env.num_actions)
+            for action in legal_actions:
+                if action != 2:  # Ensure Raise action is not chosen
+                    action_probs[action] = 1.0 / (len(legal_actions) - 1)
+            return action_probs
+        elif (obs_array == [1, 0, 0]).all():  # J
+            if 0 in legal_actions:  # Fold action is 0
+                action_probs = np.zeros(self.env.num_actions)
+                action_probs[0] = 1.0
+                return action_probs
+
+        return super().action_probs(obs, legal_actions, policy)
+# %%
