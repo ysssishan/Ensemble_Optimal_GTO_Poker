@@ -87,8 +87,8 @@ class ICM_EA_MCCFR_Agent():
             
             try:
                 self.hands += 1                
-                print(f'** Hand{self.hands} Leduc Holdem start with chipstacks {self.chipstack_pair}')
-                print(f'** Hand{self.hands} Leduc Holdem start with small blind {self.env.game.small_blind}')
+                # print(f'** Hand{self.hands} Leduc Holdem start with chipstacks {self.chipstack_pair}')
+                # print(f'** Hand{self.hands} Leduc Holdem start with small blind {self.env.game.small_blind}')
 
                 # perform Monte Carlo simulation
                 for player_id in range(self.env.num_players):
@@ -98,7 +98,6 @@ class ICM_EA_MCCFR_Agent():
                 
                 # Update the policy based on the simulations       
                 self.update_policy()
-                print(len(self.policy))
 
                 # tournament and increasing blind setting
                 # Specifically for multi-stage games/repeated games/tournaments
@@ -233,17 +232,6 @@ class ICM_EA_MCCFR_Agent():
     def update_policy(self):
         for obs in self.regrets:
             self.policy[obs] = self.regret_matching(obs)
-
-    """Update the average policy to keep track of the convergence."""
-    def update_average_policy(self):
-        for obs in self.policy:
-            if obs in self.average_policy:
-                self.average_policy[obs] = (
-                    (self.average_policy[obs] * (self.iteration - 1) + self.policy[obs]) / self.iteration
-                )
-            else:
-                self.average_policy[obs] = self.policy[obs]
-        # print(self.average_policy)
     
     """Compute action probabilities using regret matching."""
     def regret_matching(self, obs):

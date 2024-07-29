@@ -230,17 +230,6 @@ class ICM_TA_MCCFR_Agent():
     def update_policy(self):
         for obs in self.regrets:
             self.policy[obs] = self.regret_matching(obs)
-
-    """Update the average policy to keep track of the convergence."""
-    def update_average_policy(self):
-        for obs in self.policy:
-            if obs in self.average_policy:
-                self.average_policy[obs] = (
-                    (self.average_policy[obs] * (self.iteration - 1) + self.policy[obs]) / self.iteration
-                )
-            else:
-                self.average_policy[obs] = self.policy[obs]
-        # print(self.average_policy)
     
     """Compute action probabilities using regret matching."""
     def regret_matching(self, obs):
@@ -336,7 +325,7 @@ class ICM_TA_MCCFR_Agent():
             'action_record': state['action_record']} # Include the action record in the state
         combined_obs_str = json.dumps(state_dict)
         # Return the combined observation string and the list of legal action indices
-        return obs, list(state['legal_actions'].keys())
+        return combined_obs_str, list(state['legal_actions'].keys())
     
     """Save model"""        
     def save(self):

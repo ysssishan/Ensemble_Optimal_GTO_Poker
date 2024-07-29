@@ -50,7 +50,7 @@ icm_ea_mccfr_agent = ICM_EA_MCCFR_Agent(env,
                                         )
 
 # Train CFR Agent
-num_iterations = 10000
+num_iterations = 50000
 train(icm_ea_mccfr_agent, num_iterations)
 
 # Save

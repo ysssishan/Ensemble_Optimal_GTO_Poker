@@ -51,7 +51,7 @@ print(">> Pre-trained model")
 # %%
 # Setting
 # Total number of matches simulation
-total_iterations = 1000
+total_iterations = 100
 
 # Competition hands in one match
 hands_per_iteration = 100

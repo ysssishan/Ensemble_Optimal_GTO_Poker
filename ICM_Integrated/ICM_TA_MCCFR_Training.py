@@ -40,7 +40,10 @@ env = LeducholdemEnv(
             'seed':42})
 
 # Creat CFR Agent 
-icm_ta_mccfr_agent = ICM_TA_MCCFR_Agent(env, init_chipstack_pair=np.array([1000.0, 1000.0]), small_blind_multiplier=2)
+icm_ta_mccfr_agent = ICM_TA_MCCFR_Agent(env, 
+                                        init_chipstack_pair=np.array([1000.0, 1000.0]), 
+                                        small_blind_multiplier=2
+                                        )
 
 # Train CFR Agent
 num_iterations = 50000
