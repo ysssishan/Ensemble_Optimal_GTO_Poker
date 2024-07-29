@@ -51,7 +51,7 @@ print(">> Pre-trained model")
 # %%
 # Setting
 # Total number of matches simulation
-total_iterations = 30
+total_iterations = 20
 
 # Competition hands in one match
 hands_per_iteration = 5000
@@ -126,56 +126,24 @@ for round in tqdm(range(total_iterations), desc="Total Iterations"):
 # %% [markdown]
 # # Results
 
-# 创建图形
+
 plt.figure(figsize=(15, 10))
-
-# 迭代每个round并绘制每个玩家的累积筹码值以及差值
 for round_num in all_EA_wealth:
-    # 获取当前round的累积筹码值
+
     wealth_EA = all_EA_wealth[round_num]
     wealth_TA = all_TA_wealth[round_num]
     
-    # 计算差值
     wealth_diff = [a - b for a, b in zip(wealth_EA, wealth_TA)]
     
-    # 绘制累积筹码值
-    plt.plot(wealth_EA, label=f'Ensemble average strategy - Round {round_num}' if round_num == 1 else "", color='blue', alpha=0.3)
-    plt.plot(wealth_TA, label=f'Time average strategy - Round {round_num}' if round_num == 1 else "", color='red', alpha=0.3)
-    
-    # 绘制差值
-    plt.plot(wealth_diff, label=f'Difference - Round {round_num}' if round_num == 1 else "", color='green', alpha=0.3)
+    plt.plot(wealth_EA, label=f'Ensemble average strategy' if round_num == 1 else "", color='blue', alpha=0.3)
+    plt.plot(wealth_TA, label=f'Time average strategy' if round_num == 1 else "", color='red', alpha=0.3)
+    # plt.plot(wealth_diff, label=f'Difference - Round {round_num}' if round_num == 1 else "", color='green', alpha=0.3)
 
-# 添加图例和标签
 plt.xlabel('Hands')
-plt.ylabel('Cumulative Chips / Difference')
-plt.title('Cumulative Chips and Differences over 5000 Hands in 20 Rounds for Two Players')
+plt.ylabel('Cumulative Chips')
+plt.title(f'Cumulative Chips over {hands_per_iteration} in {total_iterations} Rounds for Two Players')
 plt.legend(loc='upper left')
-
-# 显示图形
 plt.show()
 
-# %%
 
-fig, ax1 = plt.subplots(figsize=(15, 10))
-
-# 创建第二个y轴
-ax2 = ax1.twinx()
-
-for round_num in all_EA_wealth:
-    # 获取当前round的累积筹码值
-    wealth_EA = all_EA_wealth[round_num]
-    wealth_TA = all_TA_wealth[round_num]
-    wealth_diff = [a - b for a, b in zip(wealth_EA, wealth_TA)]
-    
-    ax1.plot(wealth_EA, label=f'Player A - Round {round_num}' if round_num == 1 else "", color='blue', alpha=0.3)
-    ax1.plot(wealth_TA, label=f'Player B - Round {round_num}' if round_num == 1 else "", color='red', alpha=0.3)
-    # ax2.plot(wealth_diff, label=f'Difference - Round {round_num}' if round_num == 1 else "", color='green', alpha=0.3)
-
-ax1.set_xlabel('Hands')
-ax1.set_ylabel('Cumulative Chips')
-ax2.set_ylabel('Difference')
-ax1.set_title('Cumulative Chips and Differences over 5000 Hands in 20 Rounds for Two Players')
-
-fig.legend(loc='upper left', bbox_to_anchor=(0.1, 0.9))
-plt.show()
 # %%
