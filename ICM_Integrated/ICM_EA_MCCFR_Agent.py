@@ -11,7 +11,7 @@ from tqdm import tqdm
 class ICM_EA_MCCFR_Agent():
     
     def __init__(self, env, model_path='./icm_ea_mccfr_agent',
-                 max_hands = 100,
+                 max_hands=100,
                  init_chipstack_pair=np.array([10.0, 10.0]), small_blind_multiplier=1.05,
                  prize_structure = np.array([70000, 30000])):
         ''' 
@@ -61,6 +61,10 @@ class ICM_EA_MCCFR_Agent():
         # Check if the current game count is less than the maximum allowed games
         within_max_games_limit = self.hands < self.max_hands
 
+        # print(f"all_chipstacks_pos: {all_chipstacks_pos}")
+        # print(f"all_chipstacks_above_big_blind: {all_chipstacks_above_big_blind}")
+        # print(f"within_max_games_limit: {within_max_games_limit}")
+
         return all_chipstacks_pos and all_chipstacks_above_big_blind and within_max_games_limit
 
     """reset chipstacks to initial one to play more repeated games/tournaments"""
@@ -72,15 +76,18 @@ class ICM_EA_MCCFR_Agent():
         
         self.iteration += 1
 
-        # print(f"💪The {self.iteration}st/nd/th Repeated Leduc Holdem Simulation start with chipstack pair {self.chipstack_pair}💪")
+        print(
+            f"💪The {self.iteration}st/nd/th Repeated Leduc Holdem Simulation\n"
+            f"start with chipstack pair {self.chipstack_pair}\n"
+            f"and small blind {self.env.game.small_blind}.")
         
         # Continue training while the repeated game/tournament conditions allow
         while self.can_continue():
             
             try:
                 self.hands += 1                
-                # print(f'** Hand{self.hands} Leduc Holdem start with chipstacks {self.chipstack_pair}')
-                # print(f'** Hand{self.hands} Leduc Holdem start with small blind {self.env.game.small_blind}')
+                print(f'** Hand{self.hands} Leduc Holdem start with chipstacks {self.chipstack_pair}')
+                print(f'** Hand{self.hands} Leduc Holdem start with small blind {self.env.game.small_blind}')
 
                 # perform Monte Carlo simulation
                 for player_id in range(self.env.num_players):
@@ -90,6 +97,7 @@ class ICM_EA_MCCFR_Agent():
                 
                 # Update the policy based on the simulations       
                 self.update_policy()
+                print(len(self.policy))
 
                 # tournament and increasing blind setting
                 # Specifically for multi-stage games/repeated games/tournaments
@@ -100,8 +108,8 @@ class ICM_EA_MCCFR_Agent():
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
-        # print(f'🌟The {self.iteration}st/nd/th Repeated Leduc Holdem end with chipstacks {self.chipstack_pair}🌟')
-        # print(f'✅The {self.iteration}st/nd/th Monte Carlo Simulation Done✅')
+        print(f'🌟The {self.iteration}st/nd/th Repeated Leduc Holdem end with chipstacks {self.chipstack_pair}.')
+        print(f'✅The {self.iteration}st/nd/th Monte Carlo Simulation Done.')
 
     """simulate one hand of Leduc Holdem"""
     def simulate_game(self, probs, player_id):
@@ -330,7 +338,7 @@ class ICM_EA_MCCFR_Agent():
             'action_record': state['action_record']} # Include the action record in the state
         combined_obs_str = json.dumps(state_dict)
         # Return the combined observation string and the list of legal action indices
-        return obs, list(state['legal_actions'].keys())
+        return combined_obs_str, list(state['legal_actions'].keys())
     
     """Save model"""        
     def save(self):

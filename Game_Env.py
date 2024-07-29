@@ -157,8 +157,8 @@ class LeducholdemEnv:
             return False
 
         # Remove the last action from action_recorder
-        # if self.action_recorder:
-        #     self.action_recorder.pop()
+        if self.action_recorder:
+            self.action_recorder.pop()
             
         player_id = self.get_player_id()
         state = self.get_state(player_id)
@@ -281,7 +281,6 @@ class LeducholdemEnv:
         '''   
         extracted_state = {}
 
-        # legal_actions = OrderedDict({i: None for i, action in enumerate(self.actions) if action in state['legal_actions']})
         legal_actions = OrderedDict({self.actions.index(a): None for a in state['legal_actions']})
         extracted_state['legal_actions'] = legal_actions # actions index (int, not str)
 

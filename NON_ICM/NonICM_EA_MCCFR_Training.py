@@ -23,6 +23,7 @@ def train(agent, num_iterations):
             agent.train()
             agent.reset_chipstack()
             agent.env.game.small_blind = 1
+            agent.env.game.big_blind = 2 * agent.env.game.small_blind
             
             pbar.set_postfix({"Iteration": i + 1}, refresh=True)
             pbar.update(1)
