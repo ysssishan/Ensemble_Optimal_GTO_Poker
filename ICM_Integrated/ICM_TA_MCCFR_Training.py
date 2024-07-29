@@ -24,8 +24,9 @@ def train(agent, num_iterations):
         for i in range(num_iterations):
             agent.train()
             agent.reset_chipstack()
-            agent.env.game.small_blind = 1
+            agent.env.game.small_blind = 10
             agent.env.game.big_blind = 2 * agent.env.game.small_blind
+            agent.env.game.raise_amount = agent.env.game.big_blind
             
             pbar.set_postfix({"Iteration": i + 1}, refresh=True)
             pbar.update(1)
@@ -35,18 +36,18 @@ def train(agent, num_iterations):
 
 env = LeducholdemEnv(
     config={'allow_step_back':True,
-            'small_blind': 1,
+            'small_blind': 10,
             'allowed_raise_num': 2,
             'seed':42})
 
 # Creat CFR Agent 
 icm_ta_mccfr_agent = ICM_TA_MCCFR_Agent(env, 
                                         init_chipstack_pair=np.array([1000.0, 1000.0]), 
-                                        small_blind_multiplier=2
+                                        small_blind_multiplier=1.1
                                         )
 
 # Train CFR Agent
-num_iterations = 50000
+num_iterations = 10000
 train(icm_ta_mccfr_agent, num_iterations)
 
 # Save
@@ -76,7 +77,7 @@ with open('./icm_ta_mccfr_agent/average_policy.pkl', 'rb') as f:
 average_policy_df = pd.DataFrame(list(average_policy_data.items()), columns=['Key', 'Average policy [Call, Raise, Fold, Check]'])
 average_policy_df.head(10)
 
-print(policy_df.loc[100]['Obs'])
+print(policy_df.loc[2]['Obs'])
 # %%
-print(policy_df.loc[100]['Probability [Call, Raise, Fold, Check]'])
+print(policy_df.loc[2]['Probability [Call, Raise, Fold, Check]'])
 # %%

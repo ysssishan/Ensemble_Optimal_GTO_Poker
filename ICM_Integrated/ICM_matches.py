@@ -51,24 +51,25 @@ print(">> Pre-trained model")
 # %%
 # Setting
 # Total number of matches simulation
-total_iterations = 20
+total_iterations = 30
 
 # Competition hands in one match
 hands_per_iteration = 5000
 
 # Initialize lists to store results of each full iteration
-all_EA_wealth_list = []
-all_TA_wealth_list = []
-all_EA_wins = []
-all_TA_wins = []
-all_EA_payoffs = []
-all_TA_payoffs = []
+all_EA_wealth = {}
+all_TA_wealth = {}
+all_EA_wins = {}
+all_TA_wins = {}
+all_EA_payoffs = {}
+all_TA_payoffs = {}
 
 # %%
 # Run matches
 # Outer loop with progress bar
 # Outer loop with progress bar
-for iteration in tqdm(range(total_iterations), desc="Total Iterations"):
+for round in tqdm(range(total_iterations), desc="Total Iterations"):
+    
     # Initialize wealth and win counters for each iteration
     EA_wealth = 1000
     TA_wealth = 1000
@@ -80,12 +81,13 @@ for iteration in tqdm(range(total_iterations), desc="Total Iterations"):
     TA_payoffs = []
 
     # Initialize small blind
-    small_blind = 1
+    small_blind = 10
     env.game.small_blind = small_blind
-    env.game.big_blind = 2*env.game.small_blind
+    env.game.big_blind = 2 * env.game.small_blind
+    env.game.raised_amount = env.game.big_blind
 
     # Inner loop with progress bar
-    for hand in tqdm(range(hands_per_iteration), desc=f"Iteration {iteration + 1}", leave=False):
+    for hand in tqdm(range(hands_per_iteration), desc=f"Iteration {round + 1}", leave=False):
         # Simulate a match hand
         trajectories, payoffs = env.run(is_training=False)
         EA_payoffs.append(payoffs[0])
@@ -104,88 +106,76 @@ for iteration in tqdm(range(total_iterations), desc="Total Iterations"):
         TA_wealth_list.append(TA_wealth)
 
         # Double the small blind
-        small_blind *= 1.05
+        small_blind = 0.1 * env.get_payoffs()[env.game.game_pointer]
         env.game.small_blind = small_blind
+        env.game.big_blind = 2 * env.game.small_blind
+        env.game.raised_amount = env.game.big_blind
 
         # Check if match should end
         if (EA_wealth < small_blind * 2 or TA_wealth < small_blind * 2) or (EA_wealth < 0 or TA_wealth < 0):
             break
 
     # Store the results of this iteration
-    all_EA_wealth_list.append(EA_wealth_list)
-    all_TA_wealth_list.append(TA_wealth_list)
-    all_EA_wins.append(EA_wins)
-    all_TA_wins.append(TA_wins)
-    all_EA_payoffs.append(EA_payoffs)
-    all_TA_payoffs.append(TA_payoffs)
+    all_EA_wealth[round] = EA_wealth_list
+    all_TA_wealth[round] = TA_wealth_list
+    all_EA_wins[round] = EA_wins
+    all_TA_wins[round] = TA_wins
+    all_EA_payoffs[round] = EA_payoffs
+    all_TA_payoffs[round]= TA_payoffs
 
 # %% [markdown]
 # # Results
 
-plt.figure()
-for i, sublist in enumerate(all_EA_wealth_list):
-    plt.plot(sublist, color='blue', marker='o', linestyle='-',alpha=0.5)
+# 创建图形
+plt.figure(figsize=(15, 10))
 
-plt.title('Cumulative Wealth of Ensemble-average strategy')
-plt.xlabel('iteration')
-plt.ylabel('cumulated wealth')
-plt.xlim(0, 100)
-plt.ylim(0, 2000)
+# 迭代每个round并绘制每个玩家的累积筹码值以及差值
+for round_num in all_EA_wealth:
+    # 获取当前round的累积筹码值
+    wealth_EA = all_EA_wealth[round_num]
+    wealth_TA = all_TA_wealth[round_num]
+    
+    # 计算差值
+    wealth_diff = [a - b for a, b in zip(wealth_EA, wealth_TA)]
+    
+    # 绘制累积筹码值
+    plt.plot(wealth_EA, label=f'Ensemble average strategy - Round {round_num}' if round_num == 1 else "", color='blue', alpha=0.3)
+    plt.plot(wealth_TA, label=f'Time average strategy - Round {round_num}' if round_num == 1 else "", color='red', alpha=0.3)
+    
+    # 绘制差值
+    plt.plot(wealth_diff, label=f'Difference - Round {round_num}' if round_num == 1 else "", color='green', alpha=0.3)
+
+# 添加图例和标签
+plt.xlabel('Hands')
+plt.ylabel('Cumulative Chips / Difference')
+plt.title('Cumulative Chips and Differences over 5000 Hands in 20 Rounds for Two Players')
+plt.legend(loc='upper left')
 
 # 显示图形
 plt.show()
 
-# %% [markdown]
-# # Results
+# %%
 
-plt.figure()
-for i, sublist in enumerate(all_TA_wealth_list):
-    plt.plot(sublist, color='red', marker='o', linestyle='-',alpha=0.5)
+fig, ax1 = plt.subplots(figsize=(15, 10))
 
-plt.title('Cumulative Wealth of Time-average strategy')
-plt.xlabel('iteration')
-plt.ylabel('cumulated wealth')
-plt.xlim(0, 100)
-plt.ylim(0, 2000)
+# 创建第二个y轴
+ax2 = ax1.twinx()
 
-# 显示图形
+for round_num in all_EA_wealth:
+    # 获取当前round的累积筹码值
+    wealth_EA = all_EA_wealth[round_num]
+    wealth_TA = all_TA_wealth[round_num]
+    wealth_diff = [a - b for a, b in zip(wealth_EA, wealth_TA)]
+    
+    ax1.plot(wealth_EA, label=f'Player A - Round {round_num}' if round_num == 1 else "", color='blue', alpha=0.3)
+    ax1.plot(wealth_TA, label=f'Player B - Round {round_num}' if round_num == 1 else "", color='red', alpha=0.3)
+    # ax2.plot(wealth_diff, label=f'Difference - Round {round_num}' if round_num == 1 else "", color='green', alpha=0.3)
+
+ax1.set_xlabel('Hands')
+ax1.set_ylabel('Cumulative Chips')
+ax2.set_ylabel('Difference')
+ax1.set_title('Cumulative Chips and Differences over 5000 Hands in 20 Rounds for Two Players')
+
+fig.legend(loc='upper left', bbox_to_anchor=(0.1, 0.9))
 plt.show()
-
-
-# %%
-# print(f"Ensemble-average strategy wins {EA_wins} times.")
-
-# %%
-# print(f"Time-average strategy wins {total_iterations * hands_per_iteration - EA_wins} times.")
-
-# %%
-# if EA_wins < (total_iterations * hands_per_iteration - EA_wins):
-#     print(f"⭕️ Time-average strategy is more optimal than Ensemble-average.")
-# else:
-#     print(f"❌ Time-average strategy is not more optimal than Ensemble-average.")
-
-
-print(all_EA_wins)
-print(all_TA_wins)
-# %%
-
-print(sum(all_EA_wins))
-print(sum(all_TA_wins))
-# %%
-
-# 转换为 numpy 数组以方便计算
-wins_a = np.array(all_EA_wins)
-wins_b = np.array(all_TA_wins)
-
-# 计算每轮比赛的总胜利次数
-total_wins = wins_a + wins_b
-
-# 计算胜率
-win_rate_a = wins_a / total_wins
-win_rate_b = wins_b / total_wins
-
-# 打印结果
-print("Player A 平均胜率：", np.sum(win_rate_a)/len(win_rate_a))
-print("Player B 平均胜率：", np.sum(win_rate_b)/len(win_rate_b))
-
 # %%

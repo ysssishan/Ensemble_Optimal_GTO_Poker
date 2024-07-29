@@ -91,20 +91,32 @@ class ICM_TA_MCCFR_Agent():
                 for player_id in range(self.env.num_players):
                     self.env.reset()
                     probs = np.ones(self.env.num_players)
-                    self.simulate_game(probs, player_id)                  
+                    self.simulate_game(probs, player_id)
+                    
+                    # Update chipstack
+                    self.chipstack_pair = self.update_chipstacks()
+                    # Update tournament and increasing blind setting for next hand
+                    # Specifically for multi-stage games/repeated games/tournaments
+                    self.env.game.small_blind = 0.1 * self.chipstack_pair[player_id]
+                    self.env.game.big_blind = 2 * self.env.game.small_blind
+                    self.env.raise_amount = self.env.game.big_blind                  
+                                  
                 
                 # Update the policy based on the simulations       
                 self.update_policy()
 
                 # tournament and increasing blind setting
                 # Specifically for multi-stage games/repeated games/tournaments
-                self.chipstack_pair = self.update_chipstacks()
-                self.env.game.small_blind *= self.small_blind_multiplier
-                self.env.game.big_blind = 2 * self.env.game.small_blind
+                # self.chipstack_pair = self.update_chipstacks()
+                # self.env.game.small_blind *= self.small_blind_multiplier
+                # self.env.game.big_blind = 2 * self.env.game.small_blind
 
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
+        
+        self.hands = 0 # reset to 0 for next iteration
+
         # print(f'🌟The {self.iteration}st/nd/th Repeated Leduc Holdem end with chipstacks {self.chipstack_pair}🌟')
         # print(f'✅The {self.iteration}st/nd/th Monte Carlo Simulation Done✅')
 
