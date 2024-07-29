@@ -73,7 +73,11 @@ class ICM_TA_MCCFR_Agent():
         
         self.iteration += 1
 
-        # print(f"💪The {self.iteration}st/nd/th Repeated Leduc Holdem Simulation start with chipstack pair {self.chipstack_pair}💪")
+        # print(
+        #     f"💪The {self.iteration}st/nd/th Repeated Leduc Holdem Simulation\n"
+        #     f"start with chipstack pair {self.chipstack_pair}\n"
+        #     f"and small blind {self.env.game.small_blind}."
+        #     )
         
         # Continue training while the repeated game/tournament conditions allow
         while self.can_continue():

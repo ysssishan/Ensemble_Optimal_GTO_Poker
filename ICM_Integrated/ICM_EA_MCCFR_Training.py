@@ -28,7 +28,7 @@ def train(agent, num_iterations):
             agent.train()
             agent.reset_chipstack()
             agent.env.game.small_blind = 1
-            agent.env.game.big_blind = 2 * agent.env.game.small_blind
+            agent.env.game.big_blind = 2*agent.env.game.small_blind
             
             pbar.set_postfix({"Iteration": i + 1}, refresh=True)
             pbar.update(1)
@@ -44,10 +44,13 @@ env = LeducholdemEnv(
             'seed':42})
 
 # Creat CFR Agent 
-icm_ea_mccfr_agent = ICM_EA_MCCFR_Agent(env,init_chipstack_pair=np.array([1000.0, 1000.0]), small_blind_multiplier=2)
+icm_ea_mccfr_agent = ICM_EA_MCCFR_Agent(env,
+                                        init_chipstack_pair=np.array([1000.0, 1000.0]), 
+                                        small_blind_multiplier=2
+                                        )
 
 # Train CFR Agent
-num_iterations = 10
+num_iterations = 10000
 train(icm_ea_mccfr_agent, num_iterations)
 
 # Save
@@ -62,7 +65,8 @@ with open('./icm_ea_mccfr_agent/policy.pkl', 'rb') as f:
     policy_data = pickle.load(f)
 policy_df = pd.DataFrame(list(policy_data.items()), columns=['Obs', 'Probability [Call, Raise, Fold, Check]'])
 policy_df
-print(f"Strategy detail {len(policy_df)}")
+
+print(f"Strategy length {len(policy_df)}")
 
 
 # %%

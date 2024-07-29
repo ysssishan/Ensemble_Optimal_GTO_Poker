@@ -76,10 +76,11 @@ class ICM_EA_MCCFR_Agent():
         
         self.iteration += 1
 
-        print(
-            f"💪The {self.iteration}st/nd/th Repeated Leduc Holdem Simulation\n"
-            f"start with chipstack pair {self.chipstack_pair}\n"
-            f"and small blind {self.env.game.small_blind}.")
+        # print(
+        #     f"💪The {self.iteration}st/nd/th Repeated Leduc Holdem Simulation\n"
+        #     f"start with chipstack pair {self.chipstack_pair}\n"
+        #     f"and small blind {self.env.game.small_blind}."
+        #     )
         
         # Continue training while the repeated game/tournament conditions allow
         while self.can_continue():
@@ -108,8 +109,8 @@ class ICM_EA_MCCFR_Agent():
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
-        print(f'🌟The {self.iteration}st/nd/th Repeated Leduc Holdem end with chipstacks {self.chipstack_pair}.')
-        print(f'✅The {self.iteration}st/nd/th Monte Carlo Simulation Done.')
+        # print(f'🌟The {self.iteration}st/nd/th Repeated Leduc Holdem end with chipstacks {self.chipstack_pair}.')
+        # print(f'✅The {self.iteration}st/nd/th Monte Carlo Simulation Done.')
 
     """simulate one hand of Leduc Holdem"""
     def simulate_game(self, probs, player_id):
