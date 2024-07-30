@@ -96,7 +96,7 @@ def matches_run(rounds, hands, env, initial_chips, small_blind_multiplier):
         
         while len(p1_wealth_list) < hands:
             # Check if either player needs to be reset before starting a new hand
-            if p1_wealth <= 0 or p2_wealth <= 0 or p1_wealth < small_blind * 8 or p2_wealth < small_blind * 8:
+            if not (p1_wealth > 0 and p2_wealth > 0 and p1_wealth > small_blind * 8 and p2_wealth > small_blind * 8):
                 p1_wealth = initial_chips
                 p2_wealth = initial_chips
                 small_blind = 1
