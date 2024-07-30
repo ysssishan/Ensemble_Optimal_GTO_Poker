@@ -11,7 +11,7 @@ from tqdm import tqdm
 class NonICM_TA_MCCFR_Agent():
     
     def __init__(self, env, model_path='./nonicm_ta_mccfr_agent', 
-                 init_chipstack_pair=np.array([10.0, 10.0]), small_blind_multiplier=1.05):
+                 init_chipstack_pair=np.array([1000.0, 1000.0]), small_blind_multiplier=2):
         ''' 
         Args:
             env (Env): Env class
@@ -89,7 +89,7 @@ class NonICM_TA_MCCFR_Agent():
                     self.chipstack_pair = self.update_chipstacks()
                     # Update tournament and increasing blind setting for next hand
                     # Specifically for multi-stage games/repeated games/tournaments
-                    self.env.game.small_blind = 0.1 * self.chipstack_pair[player_id]
+                    self.env.game.small_blind *= 2
                     self.env.game.big_blind = 2 * self.env.game.small_blind
                     self.env.raise_amount = self.env.game.big_blind   
 
@@ -118,6 +118,7 @@ class NonICM_TA_MCCFR_Agent():
             end_chipstacks = self.update_chipstacks()        
             # Calculate the growth rate relative to the initial chipstack
             growth_rate = end_chipstacks / pre_chipstacks
+            growth_rate[growth_rate <= 0] = 1e-10
             log_growth_rate = np.log(growth_rate)
             # print(f"log growth rate {log_growth_rate}")
             return log_growth_rate
@@ -281,17 +282,17 @@ class NonICM_TA_MCCFR_Agent():
             action (int): Predicted action
             info (dict): A dictionary containing information
         '''
-        obs_str = json.dumps({'obs': state['obs'].tolist(), 'action_record': state['action_record']})
-        probs = self.action_probs(obs_str, list(state['legal_actions'].keys()), self.average_policy)
-        action = np.random.choice(len(probs), p=probs)
-        info = {}
-        info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
-        return action, info
-        # probs = self.action_probs(state['obs'].tostring(), list(state['legal_actions'].keys()), self.average_policy)
+        # obs_str = json.dumps({'obs': state['obs'].tolist(), 'action_record': state['action_record']})
+        # probs = self.action_probs(obs_str, list(state['legal_actions'].keys()), self.average_policy)
         # action = np.random.choice(len(probs), p=probs)
         # info = {}
         # info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
         # return action, info
+        probs = self.action_probs(np.array_str(state['obs']), list(state['legal_actions'].keys()), self.average_policy)
+        action = np.random.choice(len(probs), p=probs)
+        info = {}
+        info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
+        return action, info
 
     """Get state_str of the player, the information set"""
     def get_state(self, player_id):
@@ -313,7 +314,7 @@ class NonICM_TA_MCCFR_Agent():
             'action_record': state['action_record']} # Include the action record in the state
         combined_obs_str = json.dumps(state_dict)
         # Return the combined observation string and the list of legal action indices
-        return combined_obs_str, list(state['legal_actions'].keys())
+        return obs, list(state['legal_actions'].keys())
     
     """Save model"""        
     def save(self):
