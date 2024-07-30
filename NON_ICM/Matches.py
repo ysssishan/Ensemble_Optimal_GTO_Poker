@@ -18,8 +18,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # from Basic_Leduc_Game import LeducholdemGame
 from Game_Env import LeducholdemEnv
 from Random_Agent import RandomAgent
-from ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
-from ICM_TA_MCCFR_Agent import ICM_TA_MCCFR_Agent
+from NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
+from NonICM_TA_MCCFR_Agent import NonICM_TA_MCCFR_Agent
 
 
 # %% [markdown]
@@ -39,10 +39,10 @@ def load_agents(env, model_paths):
     Returns:
         A dictionary of loaded agents.
     '''
-    player_ea = ICM_EA_MCCFR_Agent(env, model_path=model_paths['player_ea'])
+    player_ea = NonICM_EA_MCCFR_Agent(env, model_path=model_paths['player_ea'])
     player_ea.load()
     
-    player_ta = ICM_TA_MCCFR_Agent(env, model_path=model_paths['player_ta'])
+    player_ta = NonICM_TA_MCCFR_Agent(env, model_path=model_paths['player_ta'])
     player_ta.load()
     
     player_random = RandomAgent(num_actions=4)  # Initialize random agent, can be used later if needed
@@ -153,8 +153,8 @@ env = env_set(config={'allow_step_back':True,
                 'seed':42})
 
 model_paths = {
-    'player_ea': './icm_ea_mccfr_agent',
-    'player_ta': './icm_ta_mccfr_agent'
+    'player_ea': './nonicm_ea_mccfr_agent',
+    'player_ta': './nonicm_ta_mccfr_agent'
 }
 agents = load_agents(env, model_paths)
 
