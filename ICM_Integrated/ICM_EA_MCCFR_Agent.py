@@ -12,7 +12,7 @@ class ICM_EA_MCCFR_Agent():
     
     def __init__(self, env, model_path='./icm_ea_mccfr_agent',
                  max_hands=100,
-                 init_chipstack_pair=np.array([10.0, 10.0]), small_blind_multiplier=1.05,
+                 init_chipstack_pair=np.array([10.0, 10.0]), small_blind_multiplier=2,
                  prize_structure = np.array([70000, 30000])):
         ''' 
         Args:
@@ -100,7 +100,7 @@ class ICM_EA_MCCFR_Agent():
                     self.chipstack_pair = self.update_chipstacks()
                     # Update tournament and increasing blind setting for next hand
                     # Specifically for multi-stage games/repeated games/tournaments
-                    self.env.game.small_blind = 0.1 * self.chipstack_pair[player_id]
+                    self.env.game.small_blind *= self.small_blind_multiplier
                     self.env.game.big_blind = 2 * self.env.game.small_blind
                     self.env.raise_amount = self.env.game.big_blind                  
                 
@@ -310,21 +310,24 @@ class ICM_EA_MCCFR_Agent():
             action (int): Predicted action
             info (dict): A dictionary containing information
         '''
-        obs_str = json.dumps({'obs': state['obs'].tolist(), 'action_record': state['action_record']})
-        print(f'obs_str {obs_str}')
-        probs = self.action_probs(obs_str, list(state['legal_actions'].keys()), self.average_policy)
-        print(f'ta agent probs from average policy {probs}')
-        action = np.random.choice(len(probs), p=probs)
-        print(f'chosen action by ta agent {action}')
-        info = {}
-        info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
-        return action, info
-        
-        # probs = self.action_probs(state['obs'].tostring(), list(state['legal_actions'].keys()), self.average_policy)
+        # obs_str = json.dumps({'obs': state['obs'].tolist(), 'action_record': state['action_record']})
+        # print(f'obs_str {obs_str}')
+        # probs = self.action_probs(obs_str, list(state['legal_actions'].keys()), self.average_policy)
+        # print(f'ta agent probs from average policy {probs}')
         # action = np.random.choice(len(probs), p=probs)
+        # print(f'chosen action by ta agent {action}')
         # info = {}
         # info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
         # return action, info
+        obs_str = np.array_str(state['obs'])
+        probs = self.action_probs(obs_str, list(state['legal_actions'].keys()), self.average_policy)
+        action = np.random.choice(len(probs), p=probs)
+        info = {}
+        # print(f"state in ta agent {obs_str}")
+        # print(f'ta agent probs from average policy {probs}')
+        # print(f'chosen action {action}')
+        info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
+        return action, info
 
     """Get state_str of the player, the information set"""
     def get_state(self, player_id):
@@ -339,14 +342,13 @@ class ICM_EA_MCCFR_Agent():
         # Retrieve the state of the given player from the environment(env class and game class)
         state = self.env.get_state(player_id)
         obs = np.array_str(state['obs'])
-        
         state_dict = {
             # 'player_id': player_id,
             'obs': state['obs'].tolist(),  # Convert numpy array to list for json serialization
             'action_record': state['action_record']} # Include the action record in the state
         combined_obs_str = json.dumps(state_dict)
         # Return the combined observation string and the list of legal action indices
-        return combined_obs_str, list(state['legal_actions'].keys())
+        return obs, list(state['legal_actions'].keys())
     
     """Save model"""        
     def save(self):

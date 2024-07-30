@@ -25,7 +25,7 @@ class RandomAgent(object):
         Returns:
             action (int): The action predicted (randomly chosen) by the random agent
         '''
-        print(f'action chosen by random agent{np.random.choice(list(state['legal_actions'].keys()))}')
+        # print(f"random agent chosen action {np.random.choice(list(state['legal_actions'].keys()))}")
         return np.random.choice(list(state['legal_actions'].keys()))
 
     def eval_step(self, state):
@@ -39,11 +39,13 @@ class RandomAgent(object):
             action (int): The action predicted (randomly chosen) by the random agent
             probs (list): The list of action probabilities
         '''
+        # print_content = state['obs']
+        # print(f"state in random agent {print_content}")
         probs = [0 for _ in range(self.num_actions)]
         for i in state['legal_actions']:
             probs[i] = 1/len(state['legal_actions'])
-        print(f'random agent probs {probs}')
         info = {}
+        # print(f'random agent probs{probs}')
         info['probs'] = {state['raw_legal_actions'][i]: probs[list(state['legal_actions'].keys())[i]] for i in range(len(state['legal_actions']))}
 
         return self.step(state), info
