@@ -311,8 +311,11 @@ class ICM_EA_MCCFR_Agent():
             info (dict): A dictionary containing information
         '''
         obs_str = json.dumps({'obs': state['obs'].tolist(), 'action_record': state['action_record']})
+        print(f'obs_str {obs_str}')
         probs = self.action_probs(obs_str, list(state['legal_actions'].keys()), self.average_policy)
+        print(f'ta agent probs from average policy {probs}')
         action = np.random.choice(len(probs), p=probs)
+        print(f'chosen action by ta agent {action}')
         info = {}
         info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
         return action, info

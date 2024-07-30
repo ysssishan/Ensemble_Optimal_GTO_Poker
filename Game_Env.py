@@ -9,6 +9,7 @@ import os
 import argparse
 import pickle
 import struct
+import json
 from collections import OrderedDict
 
 from Basic_Leduc_Game import LeducholdemGame
@@ -196,6 +197,9 @@ class LeducholdemEnv:
             # Agent plays
             if not is_training:
                 action, _ = self.agents[player_id].eval_step(state)
+                print(f'state {state}')
+                obs_in_agent = json.dumps({'obs': state['obs'].tolist(), 'action_record': state['action_record']})
+                print(f'obs_in sagent {obs_in_agent}')
             else:
                 action = self.agents[player_id].step(state)
 
