@@ -20,7 +20,7 @@ from Game_Env import LeducholdemEnv
 from Random_Agent import RandomAgent
 from ICM_MCCFR_Agent import ICM_MCCFR_Agent
 from ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
-from ICM_TA_MCCFR_Agent import ICM_TA_MCCFR_Agent
+from ICM_Integrated.ICM_EA_MCCFR_Agent import ICM_TA_MCCFR_Agent
 
 
 # %% [markdown]

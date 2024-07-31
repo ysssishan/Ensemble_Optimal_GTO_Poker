@@ -8,9 +8,9 @@ import pickle
 from tqdm import tqdm
 
 # %%
-class ICM_TA_MCCFR_Agent_test():
+class ICM_EA_MCCFR_Agent():
     
-    def __init__(self, env, model_path='./icm_ta_mccfr_agent_test',
+    def __init__(self, env, model_path='./icm_ta_mccfr_agent',
                  max_hands = 100, 
                  init_chipstack_pair=np.array([10.0, 10.0]), small_blind_multiplier=2,
                  prize_structure = np.array([70000, 30000])):
@@ -36,6 +36,7 @@ class ICM_TA_MCCFR_Agent_test():
         self.policy = {}
         self.regrets = {}
         self.average_policy = {}
+        self.state_utilities = {}
 
         # initial terminal variables for creating new tree
         self.terminal_payoffs = {}
@@ -128,7 +129,6 @@ class ICM_TA_MCCFR_Agent_test():
         Returns:
             state_utilities (list): The expected utilities for all the players
         '''
-        state_utilities = {}
 
         if self.env.is_over():
             # Get end-game chipstack for all players
@@ -146,7 +146,6 @@ class ICM_TA_MCCFR_Agent_test():
             # print(f"end_chipstacks {end_chipstacks}")
             # print(f"end_icm {end_icm}")
             # print(f"log growth rate {log_growth_rate}")
-            
             return log_growth_rate
 
         current_player = self.env.get_player_id()
@@ -174,15 +173,10 @@ class ICM_TA_MCCFR_Agent_test():
             return state_utility
 
         # Update regret and average policy
-        if obs not in state_utilities:
-            state_utilities[obs] = []
-        state_utilities[obs].append(state_utility)
+        if obs not in self.state_utilities:
+            self.state_utilities[obs] = []  # Initialize state utility list for the current state
+        self.state_utilities[obs].append(state_utility)
 
-        if obs not in state_utilities or len(state_utilities[obs]) == 0:
-            avg_utility = 0 
-        else:
-            avg_utility = np.mean(state_utilities[obs])
-    
         # Calculate regret and update average policy
         player_prob = probs[current_player]
         counterfactual_prob = (np.prod(probs[:current_player]) *
@@ -193,21 +187,19 @@ class ICM_TA_MCCFR_Agent_test():
             self.regrets[obs] = np.zeros(self.env.num_actions)
         if obs not in self.average_policy:
             self.average_policy[obs] = np.zeros(self.env.num_actions)
-
         
         # Calculate regret for the sampled action
         for action in legal_actions:
             if action in action_utilities:
                 action_prob = action_probs[action]
                 regret = counterfactual_prob * (action_utilities.get(action)[current_player]
-                        - avg_utility)
+                        - player_state_utility)
                 self.regrets[obs][action] += regret
                 # print(f'regret of action {action} is {regret}')
                 self.average_policy[obs][action] += self.iteration * player_prob * action_prob
 
         return state_utility
 
-    
     """Calculate expected payoffs based on current win probabilities and prize structure."""
     def calculate_ICM(self, chipstack_pair, prize_structure):
         '''
