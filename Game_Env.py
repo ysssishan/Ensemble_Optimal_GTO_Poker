@@ -293,14 +293,17 @@ class LeducholdemEnv:
         obs[self.card2index[hand]] = 1
         if public_card:
             obs[self.card2index[public_card]+3] = 1
-        obs[6] = state['my_chips']
-        obs[7] = sum(state['all_chips'])-state['my_chips']
-        
+        total_chips = sum(state['all_chips'])
+        obs[6] = state['my_chips'] / total_chips
+        obs[7] = (total_chips - state['my_chips']) / total_chips
+
         extracted_state['obs'] = obs
         extracted_state['raw_obs'] = state
         extracted_state['raw_legal_actions'] = [a for a in state['legal_actions']]
         extracted_state['action_record'] = self.action_recorder
-
+        action_history = [action[1] for action in self.action_recorder]
+        extracted_state['action_history'] = ''.join(action_history)
+        
         return extracted_state
 
     """Decode Action id to the action in the game"""
