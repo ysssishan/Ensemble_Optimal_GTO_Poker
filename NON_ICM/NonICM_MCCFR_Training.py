@@ -44,7 +44,7 @@ nonicm_mccfr_agent = NonICM_MCCFR_Agent(env,
                                         small_blind_multiplier=2)
 
 # Train CFR Agent
-num_iterations = 100000
+num_iterations = 10000
 train(nonicm_mccfr_agent, num_iterations)
 
 # Save
