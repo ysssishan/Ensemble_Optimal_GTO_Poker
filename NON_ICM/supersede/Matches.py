@@ -16,8 +16,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # %%
 from Game_Env import LeducholdemEnv
-from Random_Agent import RandomAgent
-from Aggressive_Agent import AggressiveAgent
+from Other_Agents.Random_Agent import RandomAgent
+from Other_Agents.Aggressive_Agent import AggressiveAgent
 from NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
 from NonICM_TA_MCCFR_Agent import NonICM_TA_MCCFR_Agent
 
