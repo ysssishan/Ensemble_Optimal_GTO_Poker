@@ -14,7 +14,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # %%
 from Basic_Leduc_Game import LeducholdemGame
 from Game_Env import LeducholdemEnv
-from NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
+from NON_ICM.NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
 
 # %%
 def train(agent, num_iterations):
@@ -24,10 +24,10 @@ def train(agent, num_iterations):
             agent.reset_chipstack()
             agent.env.game.small_blind = 1
             agent.env.game.big_blind = 2 * agent.env.game.small_blind
-            agent.env.game.raise_amount = agent.env.game.big_blind
             
             pbar.set_postfix({"Iteration": i + 1}, refresh=True)
             pbar.update(1)
+
 
 # %%
 # Creat LeducholdemEnvSimplified Env
@@ -39,9 +39,7 @@ env = LeducholdemEnv(
             'seed':42})
 
 # Creat CFR Agent 
-nonicm_ea_mccfr_agent = NonICM_EA_MCCFR_Agent(env,
-                                              init_chipstack_pair=np.array([1000.0, 1000.0]),
-                                              small_blind_multiplier=2)
+nonicm_ea_mccfr_agent = NonICM_EA_MCCFR_Agent(env, init_chipstack_pair=np.array([1000.0, 1000.0]),small_blind_multiplier=2)
 
 # Train CFR Agent
 num_iterations = 100000
@@ -58,6 +56,7 @@ nonicm_ea_mccfr_agent.save()
 with open('./nonicm_ea_mccfr_agent/policy.pkl', 'rb') as f:
     policy_data = pickle.load(f)
 policy_df = pd.DataFrame(list(policy_data.items()), columns=['Obs', 'Probability [Call, Raise, Fold, Check]'])
+
 policy_df
 
 
@@ -77,5 +76,3 @@ average_policy_df.head(10)
 
 
 
-
-# %%

@@ -111,6 +111,7 @@ class NonICM_TA_MCCFR_Agent():
         Returns:
             state_utilities (list): The expected utilities for all the players
         '''
+        state_utilities = {}
 
         if self.env.is_over():
             # Get end-game chipstack for all players
@@ -148,10 +149,15 @@ class NonICM_TA_MCCFR_Agent():
             return state_utility
 
         # Update regret and average policy
-        if obs not in self.state_utilities:
-            self.state_utilities[obs] = []  # Initialize state utility list for the current state
-        self.state_utilities[obs].append(state_utility)
+        if obs not in state_utilities:
+            state_utilities[obs] = []
+        state_utilities[obs].append(state_utility)
 
+        if obs not in state_utilities or len(state_utilities[obs]) == 0:
+            avg_utility = 0 
+        else:
+            avg_utility = np.mean(state_utilities[obs])
+    
         # Calculate regret and update average policy
         player_prob = probs[current_player]
         counterfactual_prob = (np.prod(probs[:current_player]) *
@@ -168,7 +174,7 @@ class NonICM_TA_MCCFR_Agent():
             if action in action_utilities:
                 action_prob = action_probs[action]
                 regret = counterfactual_prob * (action_utilities.get(action)[current_player]
-                        - player_state_utility)
+                        - avg_utility)
                 self.regrets[obs][action] += regret
                 # print(f'regret of action{action} is {regret}')
                 self.average_policy[obs][action] += self.iteration * player_prob * action_prob

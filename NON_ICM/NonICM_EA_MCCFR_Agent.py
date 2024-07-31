@@ -5,7 +5,7 @@ import collections
 from math import log
 import os
 import pickle
-from tqdm import tqdm  
+from tqdm import tqdm
 
 # %%
 class NonICM_EA_MCCFR_Agent():
@@ -36,6 +36,7 @@ class NonICM_EA_MCCFR_Agent():
 
         # initial terminal variables for creating new tree
         self.terminal_payoffs = {}
+        self.terminal_nodes = {}
         
         # initial counting variables for debuging and weighting
         self.iteration = 0
@@ -74,7 +75,7 @@ class NonICM_EA_MCCFR_Agent():
         # Continue training while the repeated game/tournament conditions allow
         while self.can_continue():
             
-            try:
+            try:                
                 self.hands += 1                
                 # print(f'Hand{self.hands} Leduc Holdem start with chipstacks {self.chipstack_pair}')
                 # print(f'Hand{self.hands} Leduc Holdem start with small blind {self.env.game.small_blind}')
@@ -83,22 +84,21 @@ class NonICM_EA_MCCFR_Agent():
                 for player_id in range(self.env.num_players):
                     self.env.reset()
                     probs = np.ones(self.env.num_players)
-                    self.simulate_game(probs, player_id)
+                    self.simulate_game(probs, player_id)                  
                     # Update chipstack
                     self.chipstack_pair = self.update_chipstacks()
                     # Update tournament and increasing blind setting for next hand
                     # Specifically for multi-stage games/repeated games/tournaments
                     self.env.game.small_blind *= 2
                     self.env.game.big_blind = 2 * self.env.game.small_blind
-                    self.env.raise_amount = self.env.game.big_blind                     
-                
+                    self.env.raise_amount = self.env.game.big_blind   
+
                 # Update the policy based on the simulations       
                 self.update_policy()
 
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
-        
         # print(f'🌟A Repeated Leduc Holdem end with chipstacks {self.chipstack_pair}🌟')
         # print(f'✅The {self.iteration}st/nd/th Monte Carlo Simulation Done✅')
 
@@ -118,8 +118,10 @@ class NonICM_EA_MCCFR_Agent():
             end_chipstacks = self.update_chipstacks()        
             # Calculate the growth rate relative to the initial chipstack
             growth_rate = end_chipstacks / pre_chipstacks
-            # print(f"growth rate {growth_rate}")
-            return growth_rate
+            growth_rate[growth_rate <= 0] = 1e-10
+            log_growth_rate = np.log(growth_rate)
+            # print(f"log growth rate {log_growth_rate}")
+            return log_growth_rate
 
         current_player = self.env.get_player_id()
 
@@ -168,7 +170,7 @@ class NonICM_EA_MCCFR_Agent():
                 regret = counterfactual_prob * (action_utilities.get(action)[current_player]
                         - player_state_utility)
                 self.regrets[obs][action] += regret
-                # print(f'regret of action {action} is {regret}')
+                # print(f'regret of action{action} is {regret}')
                 self.average_policy[obs][action] += self.iteration * player_prob * action_prob
 
         return state_utility
@@ -286,7 +288,6 @@ class NonICM_EA_MCCFR_Agent():
         # info = {}
         # info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
         # return action, info
-    
         probs = self.action_probs(np.array_str(state['obs']), list(state['legal_actions'].keys()), self.average_policy)
         action = np.random.choice(len(probs), p=probs)
         info = {}

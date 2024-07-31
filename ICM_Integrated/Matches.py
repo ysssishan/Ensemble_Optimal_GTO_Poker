@@ -20,7 +20,7 @@ from Game_Env import LeducholdemEnv
 from Random_Agent import RandomAgent
 from ICM_MCCFR_Agent import ICM_MCCFR_Agent
 from ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
-from ICM_Integrated.ICM_EA_MCCFR_Agent import ICM_TA_MCCFR_Agent
+from ICM_TA_MCCFR_Agent import ICM_TA_MCCFR_Agent
 
 
 # %% [markdown]
@@ -158,7 +158,7 @@ env = env_set(config={'allow_step_back':True,
                 'seed':42})
 
 model_paths = {
-    'player_ea': './icm_ta_mccfr_agent_test',
+    'player_ea': './icm_ea_mccfr_agent',
     'player_ta': './icm_ta_mccfr_agent',
     'player_normal': './icm_mccfr_agent',
 }
@@ -222,7 +222,7 @@ env = env_set(config={'allow_step_back':True,
                 'seed':42})
 
 model_paths = {
-    'player_ea': './icm_ta_mccfr_agent_test',
+    'player_ea': './icm_ea_mccfr_agent',
     'player_ta': './icm_ta_mccfr_agent',
     'player_normal': './icm_mccfr_agent',
 }
@@ -412,7 +412,7 @@ env = env_set(config={'allow_step_back':True,
                 'seed':42})
 
 model_paths = {
-    'player_ea': './icm_ta_mccfr_agent_test',
+    'player_ea': './icm_ea_mccfr_agent',
     'player_ta': './icm_ta_mccfr_agent',
     'player_normal': './icm_mccfr_agent',
 }

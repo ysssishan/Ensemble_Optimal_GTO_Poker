@@ -5,12 +5,12 @@ import collections
 from math import log
 import os
 import pickle
-from tqdm import tqdm
+from tqdm import tqdm  
 
 # %%
-class NonICM_TA_MCCFR_Agent_test():
+class NonICM_EA_MCCFR_Agent():
     
-    def __init__(self, env, model_path='./nonicm_ta_mccfr_agent_test', 
+    def __init__(self, env, model_path='./nonicm_ea_mccfr_agent', 
                  init_chipstack_pair=np.array([1000.0, 1000.0]), small_blind_multiplier=2):
         ''' 
         Args:
@@ -36,7 +36,6 @@ class NonICM_TA_MCCFR_Agent_test():
 
         # initial terminal variables for creating new tree
         self.terminal_payoffs = {}
-        self.terminal_nodes = {}
         
         # initial counting variables for debuging and weighting
         self.iteration = 0
@@ -75,7 +74,7 @@ class NonICM_TA_MCCFR_Agent_test():
         # Continue training while the repeated game/tournament conditions allow
         while self.can_continue():
             
-            try:                
+            try:
                 self.hands += 1                
                 # print(f'Hand{self.hands} Leduc Holdem start with chipstacks {self.chipstack_pair}')
                 # print(f'Hand{self.hands} Leduc Holdem start with small blind {self.env.game.small_blind}')
@@ -84,21 +83,22 @@ class NonICM_TA_MCCFR_Agent_test():
                 for player_id in range(self.env.num_players):
                     self.env.reset()
                     probs = np.ones(self.env.num_players)
-                    self.simulate_game(probs, player_id)                  
+                    self.simulate_game(probs, player_id)
                     # Update chipstack
                     self.chipstack_pair = self.update_chipstacks()
                     # Update tournament and increasing blind setting for next hand
                     # Specifically for multi-stage games/repeated games/tournaments
                     self.env.game.small_blind *= 2
                     self.env.game.big_blind = 2 * self.env.game.small_blind
-                    self.env.raise_amount = self.env.game.big_blind   
-
+                    self.env.raise_amount = self.env.game.big_blind                     
+                
                 # Update the policy based on the simulations       
                 self.update_policy()
 
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
+        
         # print(f'🌟A Repeated Leduc Holdem end with chipstacks {self.chipstack_pair}🌟')
         # print(f'✅The {self.iteration}st/nd/th Monte Carlo Simulation Done✅')
 
@@ -111,7 +111,6 @@ class NonICM_TA_MCCFR_Agent_test():
         Returns:
             state_utilities (list): The expected utilities for all the players
         '''
-        state_utilities = {}
 
         if self.env.is_over():
             # Get end-game chipstack for all players
@@ -119,10 +118,8 @@ class NonICM_TA_MCCFR_Agent_test():
             end_chipstacks = self.update_chipstacks()        
             # Calculate the growth rate relative to the initial chipstack
             growth_rate = end_chipstacks / pre_chipstacks
-            growth_rate[growth_rate <= 0] = 1e-10
-            log_growth_rate = np.log(growth_rate)
-            # print(f"log growth rate {log_growth_rate}")
-            return log_growth_rate
+            # print(f"growth rate {growth_rate}")
+            return growth_rate
 
         current_player = self.env.get_player_id()
 
@@ -149,15 +146,10 @@ class NonICM_TA_MCCFR_Agent_test():
             return state_utility
 
         # Update regret and average policy
-        if obs not in state_utilities:
-            state_utilities[obs] = []
-        state_utilities[obs].append(state_utility)
+        if obs not in self.state_utilities:
+            self.state_utilities[obs] = []  # Initialize state utility list for the current state
+        self.state_utilities[obs].append(state_utility)
 
-        if obs not in state_utilities or len(state_utilities[obs]) == 0:
-            avg_utility = 0 
-        else:
-            avg_utility = np.mean(state_utilities[obs])
-    
         # Calculate regret and update average policy
         player_prob = probs[current_player]
         counterfactual_prob = (np.prod(probs[:current_player]) *
@@ -174,9 +166,9 @@ class NonICM_TA_MCCFR_Agent_test():
             if action in action_utilities:
                 action_prob = action_probs[action]
                 regret = counterfactual_prob * (action_utilities.get(action)[current_player]
-                        - avg_utility)
+                        - player_state_utility)
                 self.regrets[obs][action] += regret
-                # print(f'regret of action{action} is {regret}')
+                # print(f'regret of action {action} is {regret}')
                 self.average_policy[obs][action] += self.iteration * player_prob * action_prob
 
         return state_utility
@@ -294,6 +286,7 @@ class NonICM_TA_MCCFR_Agent_test():
         # info = {}
         # info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
         # return action, info
+    
         probs = self.action_probs(np.array_str(state['obs']), list(state['legal_actions'].keys()), self.average_policy)
         action = np.random.choice(len(probs), p=probs)
         info = {}

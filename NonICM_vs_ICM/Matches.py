@@ -20,8 +20,8 @@ from Game_Env import LeducholdemEnv
 # Import agent class
 from ICM_Integrated.ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
 from ICM_Integrated.ICM_EA_MCCFR_Agent import ICM_TA_MCCFR_Agent
-from NON_ICM.NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
-from NON_ICM.NonICM_TA_MCCFR_Agent import NonICM_TA_MCCFR_Agent
+from NON_ICM.supersede.NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
+from NON_ICM.NonICM_EA_MCCFR_Agent import NonICM_TA_MCCFR_Agent
 
 
 # %% [markdown]
