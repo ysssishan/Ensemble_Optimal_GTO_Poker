@@ -18,6 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # from Basic_Leduc_Game import LeducholdemGame
 from Game_Env import LeducholdemEnv
 from Random_Agent import RandomAgent
+from ICM_MCCFR_Agent import ICM_MCCFR_Agent
 from ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
 from ICM_TA_MCCFR_Agent import ICM_TA_MCCFR_Agent
 
@@ -44,6 +45,9 @@ def load_agents(env, model_paths):
     
     player_ta = ICM_TA_MCCFR_Agent(env, model_path=model_paths['player_ta'])
     player_ta.load()
+
+    player_normal = ICM_MCCFR_Agent(env, model_path=model_paths['player_normal'])
+    player_normal.load()
     
     player_random = RandomAgent(num_actions=4)  # Initialize random agent, can be used later if needed
 
@@ -51,6 +55,7 @@ def load_agents(env, model_paths):
     return {
         'player_ea': player_ea,
         'player_ta': player_ta,
+        'player_normal': player_normal,
         'player_random': player_random
     }
 
@@ -94,7 +99,7 @@ def matches_run(rounds, hands, env, initial_chips, small_blind_multiplier):
         p2_payoffs = []
         trajectories_list =[]
         
-        while len(p1_wealth_list) < hands:
+        for _ in range(hands):
             # Check if either player needs to be reset before starting a new hand
             if not (p1_wealth > 0 and p2_wealth > 0 and p1_wealth > small_blind * 8 and p2_wealth > small_blind * 8):
                 p1_wealth = initial_chips
@@ -153,8 +158,9 @@ env = env_set(config={'allow_step_back':True,
                 'seed':42})
 
 model_paths = {
-    'player_ea': './icm_ea_mccfr_agent',
-    'player_ta': './icm_ta_mccfr_agent'
+    'player_ea': './icm_ta_mccfr_agent_test',
+    'player_ta': './icm_ta_mccfr_agent',
+    'player_normal': './icm_mccfr_agent',
 }
 agents = load_agents(env, model_paths)
 
@@ -216,8 +222,9 @@ env = env_set(config={'allow_step_back':True,
                 'seed':42})
 
 model_paths = {
-    'player_ea': './icm_ea_mccfr_agent',
-    'player_ta': './icm_ta_mccfr_agent'
+    'player_ea': './icm_ta_mccfr_agent_test',
+    'player_ta': './icm_ta_mccfr_agent',
+    'player_normal': './icm_mccfr_agent',
 }
 agents = load_agents(env, model_paths)
 
@@ -278,7 +285,8 @@ env = env_set(config={'allow_step_back':True,
 
 model_paths = {
     'player_ea': './icm_ea_mccfr_agent',
-    'player_ta': './icm_ta_mccfr_agent'
+    'player_ta': './icm_ta_mccfr_agent',
+    'player_normal': './icm_mccfr_agent',
 }
 agents = load_agents(env, model_paths)
 
@@ -320,6 +328,134 @@ p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 plt.figure(figsize=(12, 6))
 plt.plot(round_nums, p1_win_probs, label='Time-average Strategy Player Wealth', color='royalblue', marker='o',alpha=0.3)
 plt.plot(round_nums, p2_win_probs, label='Random Strategy Player Wealth', color='darkcyan', marker='o',alpha=0.3)
+
+plt.title('Win Probability Over Rounds')
+plt.xlabel('Rounds')
+plt.ylabel('Win Probability')
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=2, borderaxespad=0.)
+plt.subplots_adjust(bottom=0.2)
+plt.grid(True)
+plt.show()
+
+
+
+# %% [markdown]
+# # Play game - normal vs ta
+# Set up
+env = env_set(config={'allow_step_back':True,
+                'small_blind': 1,
+                'allowed_raise_num': 2,
+                'seed':42})
+
+model_paths = {
+    'player_ea': './icm_ea_mccfr_agent',
+    'player_ta': './icm_ta_mccfr_agent',
+    'player_normal': './icm_mccfr_agent',
+}
+agents = load_agents(env, model_paths)
+
+set_agents(env, [agents['player_normal'], agents['player_ta']])
+
+#  Run matches
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+
+# %%
+# Line plot for wealth change
+
+plt.figure(figsize=(12, 6))
+
+for round_num in all_p1_wealth:
+    plt.plot(all_p1_wealth[round_num], color='indianred', alpha=0.05)
+    plt.plot(all_p2_wealth[round_num], color='royalblue', alpha=0.05)
+custom_lines = [
+    Line2D([0], [0], color='indianred', lw=4, alpha=0.8),
+    Line2D([0], [0], color='royalblue', lw=4, alpha=0.8)
+]
+plt.legend(custom_lines, ['Normal Strategy Player Wealth', 'Time-average Strategy Player Wealth'], 
+           loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0.)
+
+plt.title(f'Wealth Over {len(all_p1_wealth)} Rounds Matches')
+plt.xlabel('Number of Hands in One Round')
+plt.ylabel('Wealth')
+plt.subplots_adjust(bottom=0.2)
+plt.grid(True)
+plt.show()
+
+
+# Line plot for win prob.
+# data preparation
+
+round_nums = list(all_p1_wins_prob.keys())
+p1_win_probs = [all_p1_wins_prob[round_num] for round_num in round_nums]
+p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
+# fig
+plt.figure(figsize=(12, 6))
+plt.plot(round_nums, p1_win_probs, label='Normal Strategy Win Probability', color='indianred', marker='o',alpha=0.3)
+plt.plot(round_nums, p2_win_probs, label='Time-average Strategy Win Probability', color='royalblue', marker='o',alpha=0.3)
+
+plt.title('Win Probability Over Rounds')
+plt.xlabel('Rounds')
+plt.ylabel('Win Probability')
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=2, borderaxespad=0.)
+plt.subplots_adjust(bottom=0.2)
+plt.grid(True)
+plt.show()
+
+
+
+# %% [markdown]
+# # Play game - normal vs random
+# Set up
+env = env_set(config={'allow_step_back':True,
+                'small_blind': 1,
+                'allowed_raise_num': 2,
+                'seed':42})
+
+model_paths = {
+    'player_ea': './icm_ta_mccfr_agent_test',
+    'player_ta': './icm_ta_mccfr_agent',
+    'player_normal': './icm_mccfr_agent',
+}
+agents = load_agents(env, model_paths)
+
+set_agents(env, [agents['player_normal'], agents['player_random']])
+
+#  Run matches
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+
+# %%
+# Line plot for wealth change
+
+plt.figure(figsize=(12, 6))
+
+for round_num in all_p1_wealth:
+    plt.plot(all_p1_wealth[round_num], color='indianred', alpha=0.05)
+    plt.plot(all_p2_wealth[round_num], color='royalblue', alpha=0.05)
+custom_lines = [
+    Line2D([0], [0], color='indianred', lw=4, alpha=0.8),
+    Line2D([0], [0], color='royalblue', lw=4, alpha=0.8)
+]
+plt.legend(custom_lines, ['Normal Strategy Player Wealth', 'Random Strategy Player Wealth'], 
+           loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0.)
+
+plt.title(f'Wealth Over {len(all_p1_wealth)} Rounds Matches')
+plt.xlabel('Number of Hands in One Round')
+plt.ylabel('Wealth')
+plt.subplots_adjust(bottom=0.2)
+plt.grid(True)
+plt.show()
+
+
+# Line plot for win prob.
+# data preparation
+
+round_nums = list(all_p1_wins_prob.keys())
+p1_win_probs = [all_p1_wins_prob[round_num] for round_num in round_nums]
+p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
+# fig
+plt.figure(figsize=(12, 6))
+plt.plot(round_nums, p1_win_probs, label='Normal Strategy Win Probability', color='indianred', marker='o',alpha=0.3)
+plt.plot(round_nums, p2_win_probs, label='Random Strategy Win Probability', color='royalblue', marker='o',alpha=0.3)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
