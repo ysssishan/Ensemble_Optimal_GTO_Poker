@@ -294,7 +294,9 @@ class NonICM_TA_MCCFR_Agent():
         # info = {}
         # info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
         # return action, info
-        probs = self.action_probs(np.array_str(state['obs']), list(state['legal_actions'].keys()), self.average_policy)
+        obs_card = np.array_str(state['obs'])
+        obs = " ".join([obs_card,state['action_history']])
+        probs = self.action_probs(obs, list(state['legal_actions'].keys()), self.average_policy)
         action = np.random.choice(len(probs), p=probs)
         info = {}
         info['probs'] = {state['raw_legal_actions'][i]: float(probs[list(state['legal_actions'].keys())[i]]) for i in range(len(state['legal_actions']))}
@@ -312,8 +314,8 @@ class NonICM_TA_MCCFR_Agent():
         '''
         # Retrieve the state of the given player from the environment(env class and game class)
         state = self.env.get_state(player_id)
-        obs = np.array_str(state['obs'])
-        
+        obs_card = np.array_str(state['obs'])
+        obs = " ".join([obs_card,state['action_history']])
         state_dict = {
             # 'player_id': player_id,
             'obs': state['obs'].tolist(),  # Convert numpy array to list for json serialization
@@ -321,6 +323,7 @@ class NonICM_TA_MCCFR_Agent():
         combined_obs_str = json.dumps(state_dict)
         # Return the combined observation string and the list of legal action indices
         return obs, list(state['legal_actions'].keys())
+
     
     """Save model"""        
     def save(self):
