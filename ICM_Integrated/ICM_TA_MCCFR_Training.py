@@ -47,7 +47,7 @@ icm_ta_mccfr_agent = ICM_TA_MCCFR_Agent(env,
                                         )
 
 # Train CFR Agent
-num_iterations = 100000
+num_iterations = 10000
 train(icm_ta_mccfr_agent, num_iterations)
 
 # Save
@@ -59,20 +59,22 @@ icm_ta_mccfr_agent.save()
 
 
 # %%
-with open('./icm_ta_mccfr_agent_test/policy.pkl', 'rb') as f:
+with open('./icm_ta_mccfr_agent/policy.pkl', 'rb') as f:
     policy_data = pickle.load(f)
 policy_df = pd.DataFrame(list(policy_data.items()), columns=['Obs', 'Probability [Call, Raise, Fold, Check]'])
 policy_df
 
 # %%
-with open('./icm_ta_mccfr_agent_test/regrets.pkl', 'rb') as f:
+policy_df.to_excel('policy_df.xlsx')
+# %%
+with open('./icm_ta_mccfr_agent/regrets.pkl', 'rb') as f:
     regrets_data = pickle.load(f)
 regrets_df = pd.DataFrame(list(regrets_data.items()), columns=['Obs', 'Regret [Call, Raise, Fold, Check]'])
 regrets_df['positive_regret_sum'] = regrets_df['Regret [Call, Raise, Fold, Check]'].apply(lambda x: sum(v for v in x if v > 0))
 regrets_df.head(10)
 
 # %%
-with open('./icm_ta_mccfr_agent_test/average_policy.pkl', 'rb') as f:
+with open('./icm_ta_mccfr_agent/average_policy.pkl', 'rb') as f:
     average_policy_data = pickle.load(f)
 average_policy_df = pd.DataFrame(list(average_policy_data.items()), columns=['Key', 'Average policy [Call, Raise, Fold, Check]'])
 average_policy_df.head(10)

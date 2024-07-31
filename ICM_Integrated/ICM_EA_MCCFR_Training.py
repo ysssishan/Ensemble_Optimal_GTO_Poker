@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # %%
 from Basic_Leduc_Game import LeducholdemGame
 from Game_Env import LeducholdemEnv
-from ICM_Integrated.ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
+from ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
 
 # %% [markdown]
 # # Train
@@ -47,22 +47,28 @@ icm_ea_mccfr_agent = ICM_EA_MCCFR_Agent(env,
                                         )
 
 # Train CFR Agent
-num_iterations = 100000
+num_iterations = 10000
 train(icm_ea_mccfr_agent, num_iterations)
 
 # Save
 icm_ea_mccfr_agent.save()
 
 
-# %% [markdown]
-# # Results
+
+# # %% [markdown]
+# # # Results
 
 
 # %%
-with open('./icm_ea_mccfr_agent/policy.pkl', 'rb') as f:
+# 
+with open('./icm_ta_mccfr_agent/policy.pkl', 'rb') as f:
     policy_data = pickle.load(f)
 policy_df = pd.DataFrame(list(policy_data.items()), columns=['Obs', 'Probability [Call, Raise, Fold, Check]'])
 policy_df
+policy_df.to_excel('policy_df.xlsx')
+# %%
+
+
 
 # %%
 with open('./icm_ea_mccfr_agent/regrets.pkl', 'rb') as f:
@@ -86,4 +92,6 @@ print(len(average_policy_df.head(10)))
 # %%
 
 print(policy_df)
+# %%
+
 # %%
