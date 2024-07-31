@@ -19,9 +19,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Game_Env import LeducholdemEnv
 # Import agent class
 from ICM_Integrated.ICM_EA_MCCFR_Agent import ICM_EA_MCCFR_Agent
-from ICM_Integrated.ICM_EA_MCCFR_Agent import ICM_TA_MCCFR_Agent
-from NON_ICM.supersede.NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
-from NON_ICM.NonICM_EA_MCCFR_Agent import NonICM_TA_MCCFR_Agent
+from ICM_Integrated.ICM_TA_MCCFR_Agent import ICM_TA_MCCFR_Agent
+from NON_ICM.NonICM_EA_MCCFR_Agent import NonICM_EA_MCCFR_Agent
+from NON_ICM.NonICM_TA_MCCFR_Agent import NonICM_TA_MCCFR_Agent
 
 
 # %% [markdown]
@@ -171,7 +171,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_nonicm_ea'], agents['player_icm_ea']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
 
 # %%
 # Line plot for wealth change
@@ -204,8 +204,8 @@ p1_win_probs = [all_p1_wins_prob[round_num] for round_num in round_nums]
 p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='NonICM Ensemble-average Strategy Win Probability', marker='o', color='#af8dc3', alpha=0.8)
-plt.plot(round_nums, p2_win_probs, label='ICM Ensemble-average Strategy Win Probability', marker='o',color='#1b7837', alpha=0.8)
+plt.plot(round_nums, p1_win_probs, label='NonICM Ensemble-average Strategy Win Probability', marker='o', color='#af8dc3', alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='ICM Ensemble-average Strategy Win Probability', marker='o',color='#1b7837', alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
@@ -237,7 +237,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_nonicm_ta'], agents['player_icm_ta']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
 
 # %%
 # Line plot for wealth change
@@ -270,8 +270,8 @@ p1_win_probs = [all_p1_wins_prob[round_num] for round_num in round_nums]
 p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='NonICM Time-average Strategy Win Probability', color='#af8dc3', marker='o',alpha=0.8)
-plt.plot(round_nums, p2_win_probs, label='ICM Time-average Strategy Win Probability', color='#1b7837', marker='o',alpha=0.8)
+plt.plot(round_nums, p1_win_probs, label='NonICM Time-average Strategy Win Probability', color='#af8dc3', marker='o',alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='ICM Time-average Strategy Win Probability', color='#1b7837', marker='o',alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')

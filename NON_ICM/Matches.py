@@ -147,7 +147,7 @@ def matches_run(rounds, hands, env, initial_chips, small_blind_multiplier):
 # %% [markdown]
 # # Play game - ea vs ta
 # Set up
-env = env_set(config={'allow_step_back':True,
+env = env_set(config={'allow_step_back':False,
                 'small_blind': 1,
                 'allowed_raise_num': 2,
                 'seed':42})
@@ -161,7 +161,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_ea'], agents['player_ta']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=5000,small_blind_multiplier=1.1)
 
 # %%
 # Line plot for wealth change
@@ -169,11 +169,11 @@ all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2
 plt.figure(figsize=(12, 6))
 
 for round_num in all_p1_wealth:
-    plt.plot(all_p1_wealth[round_num], color='indianred', alpha=0.05)
-    plt.plot(all_p2_wealth[round_num], color='royalblue', alpha=0.05)
+    plt.plot(all_p1_wealth[round_num], color='indianred', alpha=0.1)
+    plt.plot(all_p2_wealth[round_num], color='royalblue', alpha=0.1)
 custom_lines = [
-    Line2D([0], [0], color='indianred', lw=4, alpha=0.8),
-    Line2D([0], [0], color='royalblue', lw=4, alpha=0.8)
+    Line2D([0], [0], color='indianred', lw=4, alpha=0.4),
+    Line2D([0], [0], color='royalblue', lw=4, alpha=0.4)
 ]
 plt.legend(custom_lines, ['Ensemble-average Strategy Player Wealth', 'Time-average Strategy Player Wealth'], 
            loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0.)
@@ -194,8 +194,8 @@ p1_win_probs = [all_p1_wins_prob[round_num] for round_num in round_nums]
 p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.3)
-plt.plot(round_nums, p2_win_probs, label='Time-average Strategy Win Probability', color='royalblue', marker='o',alpha=0.3)
+plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='Time-average Strategy Win Probability', color='royalblue', marker='o',alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
@@ -205,12 +205,14 @@ plt.subplots_adjust(bottom=0.2)
 plt.grid(True)
 plt.show()
 
-
+# %%
+print(sum(all_p1_wins.values()))
+print(sum(all_p2_wins.values()))
 
 # %% [markdown]
 # # Play game - ea vs random
 # Set up
-env = env_set(config={'allow_step_back':True,
+env = env_set(config={'allow_step_back':False,
                 'small_blind': 1,
                 'allowed_raise_num': 2,
                 'seed':42})
@@ -224,7 +226,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_ea'], agents['player_random']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2.5)
 
 # %%
 # Line plot for wealth change
@@ -234,8 +236,8 @@ for round_num in all_p1_wealth:
     plt.plot(all_p1_wealth[round_num], color='indianred', alpha=0.05)
     plt.plot(all_p2_wealth[round_num], color='darkcyan', alpha=0.05)
 custom_lines = [
-    Line2D([0], [0], color='indianred', lw=4, alpha=0.8),
-    Line2D([0], [0], color='darkcyan', lw=4, alpha=0.8)
+    Line2D([0], [0], color='indianred', lw=4, alpha=0.4),
+    Line2D([0], [0], color='darkcyan', lw=4, alpha=0.4)
 ]
 plt.legend(custom_lines, ['Ensemble-average Strategy Player Wealth', 'Random Strategy Player Wealth'], 
            loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0.)
@@ -247,6 +249,9 @@ plt.subplots_adjust(bottom=0.2)
 plt.grid(True)
 plt.show()
 
+# %%
+print(sum(all_p1_wins.values()))
+print(sum(all_p2_wins.values()))
 
 # Line plot for win prob.
 # data preparation
@@ -256,8 +261,8 @@ p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.3)
-plt.plot(round_nums, p2_win_probs, label='Random Strategy Win Probability', color='darkcyan', marker='o',alpha=0.3)
+plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='Random Strategy Win Probability', color='darkcyan', marker='o',alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
@@ -267,6 +272,17 @@ plt.subplots_adjust(bottom=0.2)
 plt.grid(True)
 plt.show()
 
+# %%
+print(sum(all_p1_wins.values()))
+print(sum(all_p2_wins.values()))
+
+
+# %%
+sums = {}
+for key, value in all_p1_payoffs.items():
+    # 对列表中的所有元素求和，并将结果存储在新字典中
+    sums[key] = sum(value)
+print(sum(sums.values()))
 
 # %% [markdown]
 # # Play game - ta vs random
@@ -286,15 +302,15 @@ set_agents(env, [agents['player_ta'], agents['player_random']])
 
 # %%
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=1.5)
 
 # %%
 # Line plot for wealth change
 plt.figure(figsize=(12, 6))
 
 for round_num in all_p1_wealth:
-    plt.plot(all_p1_wealth[round_num], color='royalblue', alpha=0.05)
-    plt.plot(all_p2_wealth[round_num], color='darkcyan', alpha=0.05)
+    plt.plot(all_p1_wealth[round_num], color='royalblue', alpha=0.1)
+    plt.plot(all_p2_wealth[round_num], color='darkcyan', alpha=0.1)
 custom_lines = [
     Line2D([0], [0], color='royalblue', lw=4, alpha=0.8),
     Line2D([0], [0], color='darkcyan', lw=4, alpha=0.8)
@@ -318,8 +334,8 @@ p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='Time-average Strategy Player Wealth', color='royalblue', marker='o',alpha=0.3)
-plt.plot(round_nums, p2_win_probs, label='Random Strategy Player Wealth', color='darkcyan', marker='o',alpha=0.3)
+plt.plot(round_nums, p1_win_probs, label='Time-average Strategy Player Wealth', color='royalblue', marker='o',alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='Random Strategy Player Wealth', color='darkcyan', marker='o',alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
@@ -328,3 +344,10 @@ plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=2, borderaxespad
 plt.subplots_adjust(bottom=0.2)
 plt.grid(True)
 plt.show()
+
+# %%
+
+
+# %%
+print(sum(all_p1_wins.values()))
+print(sum(all_p2_wins.values()))

@@ -167,7 +167,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_ea'], agents['player_ta']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=1)
 
 # %%
 # Line plot for wealth change
@@ -200,8 +200,8 @@ p1_win_probs = [all_p1_wins_prob[round_num] for round_num in round_nums]
 p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.3)
-plt.plot(round_nums, p2_win_probs, label='Time-average Strategy Win Probability', color='royalblue', marker='o',alpha=0.3)
+plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='Time-average Strategy Win Probability', color='royalblue', marker='o',alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
@@ -231,7 +231,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_ea'], agents['player_random']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=50,env=env,initial_chips=1000,small_blind_multiplier=1)
 
 # %%
 # Line plot for wealth change
@@ -263,8 +263,8 @@ p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.3)
-plt.plot(round_nums, p2_win_probs, label='Random Strategy Win Probability', color='darkcyan', marker='o',alpha=0.3)
+plt.plot(round_nums, p1_win_probs, label='Ensemble-average Strategy Win Probability', color='indianred', marker='o',alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='Random Strategy Win Probability', color='darkcyan', marker='o',alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
@@ -294,7 +294,7 @@ set_agents(env, [agents['player_ta'], agents['player_random']])
 
 # %%
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=1)
 
 # %%
 # Line plot for wealth change
@@ -326,8 +326,8 @@ p2_win_probs = [all_p2_wins_prob[round_num] for round_num in round_nums]
 
 # fig
 plt.figure(figsize=(12, 6))
-plt.plot(round_nums, p1_win_probs, label='Time-average Strategy Player Wealth', color='royalblue', marker='o',alpha=0.3)
-plt.plot(round_nums, p2_win_probs, label='Random Strategy Player Wealth', color='darkcyan', marker='o',alpha=0.3)
+plt.plot(round_nums, p1_win_probs, label='Time-average Strategy Player Wealth', color='royalblue', marker='o',alpha=0.6)
+plt.plot(round_nums, p2_win_probs, label='Random Strategy Player Wealth', color='darkcyan', marker='o',alpha=0.6)
 
 plt.title('Win Probability Over Rounds')
 plt.xlabel('Rounds')
@@ -357,7 +357,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_normal'], agents['player_ta']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=1)
 
 # %%
 # Line plot for wealth change
@@ -421,7 +421,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_normal'], agents['player_random']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=100,hands=100,env=env,initial_chips=1000,small_blind_multiplier=1)
 
 # %%
 # Line plot for wealth change
