@@ -15,7 +15,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # %%
-# from Basic_Leduc_Game import LeducholdemGame
 from Game_Env import LeducholdemEnv
 from Random_Agent import RandomAgent
 from Aggressive_Agent import AggressiveAgent

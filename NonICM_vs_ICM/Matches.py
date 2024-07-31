@@ -162,7 +162,7 @@ env = env_set(config={'allow_step_back':True,
 
 model_paths = {
     'player_nonicm_ea': './NON_ICM/nonicm_ea_mccfr_agent',
-    'player_nonicm_ta': './NON_ICM/icm_ta_mccfr_agent',
+    'player_nonicm_ta': './NON_ICM/nonicm_ta_mccfr_agent',
     'player_icm_ea': './ICM_Integrated/icm_ea_mccfr_agent',
     'player_icm_ta': './ICM_Integrated/icm_ta_mccfr_agent'
 }
@@ -171,7 +171,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_nonicm_ea'], agents['player_icm_ea']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=20,hands=1000,env=env,initial_chips=1000,small_blind_multiplier=1)
 
 # %%
 # Line plot for wealth change
@@ -179,11 +179,11 @@ all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2
 plt.figure(figsize=(12, 6))
 
 for round_num in all_p1_wealth:
-    plt.plot(all_p1_wealth[round_num], color='#af8dc3', alpha=0.2)
-    plt.plot(all_p2_wealth[round_num], color='#1b7837', alpha=0.2)
+    plt.plot(all_p1_wealth[round_num], color='#af8dc3', alpha=0.5)
+    plt.plot(all_p2_wealth[round_num], color='#1b7837', alpha=0.5)
 custom_lines = [
-    Line2D([0], [0], lw=4, color='#af8dc3', alpha=0.2),
-    Line2D([0], [0], lw=4, color='#1b7837', alpha=0.2)
+    Line2D([0], [0], lw=4, color='#af8dc3', alpha=0.8),
+    Line2D([0], [0], lw=4, color='#1b7837', alpha=0.8)
 ]
 plt.legend(custom_lines, ['NonICM Ensemble-average Strategy Player Wealth', 'ICM Ensemble-average  Strategy Player Wealth'], 
            loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0.)
@@ -228,7 +228,7 @@ env = env_set(config={'allow_step_back':True,
 
 model_paths = {
     'player_nonicm_ea': './NON_ICM/nonicm_ea_mccfr_agent',
-    'player_nonicm_ta': './NON_ICM/icm_ta_mccfr_agent',
+    'player_nonicm_ta': './NON_ICM/nonicm_ta_mccfr_agent',
     'player_icm_ea': './ICM_Integrated/icm_ea_mccfr_agent',
     'player_icm_ta': './ICM_Integrated/icm_ta_mccfr_agent'
 }
@@ -237,7 +237,7 @@ agents = load_agents(env, model_paths)
 set_agents(env, [agents['player_nonicm_ta'], agents['player_icm_ta']])
 
 #  Run matches
-all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=50,hands=100,env=env,initial_chips=1000,small_blind_multiplier=2)
+all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2_wins_prob, all_p1_payoffs, all_p2_payoffs, all_trajectories = matches_run(rounds=20,hands=1000,env=env,initial_chips=1000,small_blind_multiplier=1)
 
 # %%
 # Line plot for wealth change
@@ -245,11 +245,11 @@ all_p1_wealth, all_p2_wealth, all_p1_wins, all_p2_wins, all_p1_wins_prob, all_p2
 plt.figure(figsize=(12, 6))
 
 for round_num in all_p1_wealth:
-    plt.plot(all_p1_wealth[round_num], color='#af8dc3', alpha=0.2)
-    plt.plot(all_p2_wealth[round_num], color='#1b7837', alpha=0.2)
+    plt.plot(all_p1_wealth[round_num], color='#af8dc3', alpha=0.5)
+    plt.plot(all_p2_wealth[round_num], color='#1b7837', alpha=0.5)
 custom_lines = [
-    Line2D([0], [0], color='#af8dc3', lw=4, alpha=0.3),
-    Line2D([0], [0], color='#1b7837', lw=4, alpha=0.3)
+    Line2D([0], [0], color='#af8dc3', lw=4, alpha=0.8),
+    Line2D([0], [0], color='#1b7837', lw=4, alpha=0.8)
 ]
 plt.legend(custom_lines, ['NonICM Time-average Strategy Player Wealth', 'ICM Time-average  Strategy Player Wealth'], 
            loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2, borderaxespad=0.)
