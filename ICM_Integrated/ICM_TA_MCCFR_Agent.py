@@ -179,6 +179,7 @@ class ICM_TA_MCCFR_Agent():
             state_utilities[obs] = []
         state_utilities[obs].append(state_utility)
 
+        # we occasionally found that calculating avg util for regret update, keep it
         if obs not in state_utilities or len(state_utilities[obs]) == 0:
             avg_utility = 0 
         else:
@@ -198,14 +199,13 @@ class ICM_TA_MCCFR_Agent():
         
         # Calculate regret for the sampled action
         for action in legal_actions:
-            if action in action_utilities:
-                action_prob = action_probs[action]
-                regret = counterfactual_prob * (action_utilities.get(action)[current_player]
-                        - avg_utility)
-                self.regrets[obs][action] += regret
-                # print(f'regret of action {action} is {regret}')
-                self.average_policy[obs][action] += self.iteration * player_prob * action_prob
-
+            action_prob = action_probs[action]
+            regret = counterfactual_prob * (action_utilities.get(action)[current_player]
+                    - player_state_utility)
+            self.regrets[obs][action] += regret
+            # print(f'regret of action {action} is {regret}')
+            self.average_policy[obs][action] += self.iteration * player_prob * action_prob
+        
         return state_utility
 
     

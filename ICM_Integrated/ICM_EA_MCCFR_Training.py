@@ -61,7 +61,7 @@ icm_ea_mccfr_agent.save()
 
 # %%
 # 
-with open('./icm_ta_mccfr_agent/policy.pkl', 'rb') as f:
+with open('./icm_ea_mccfr_agent/policy.pkl', 'rb') as f:
     policy_data = pickle.load(f)
 policy_df = pd.DataFrame(list(policy_data.items()), columns=['Obs', 'Probability [Call, Raise, Fold, Check]'])
 policy_df

@@ -136,17 +136,14 @@ class ICM_EA_MCCFR_Agent():
             pre_icm = self.calculate_ICM(pre_chipstacks,self.prize_structure)
             end_chipstacks = self.update_chipstacks()
             end_icm = self.calculate_ICM(end_chipstacks,self.prize_structure)
+            utility = end_icm - pre_icm
 
-            # Calculate the growth rate relative to the initial chipstack
-            growth_rate = end_icm / pre_icm
-            log_growth_rate = np.log(growth_rate)
-            
             # print(f"pre_chipstacks {pre_chipstacks}")
             # print(f"pre_icm {pre_icm}")
             # print(f"end_chipstacks {end_chipstacks}")
             # print(f"end_icm {end_icm}")
             # print(f"log growth rate {log_growth_rate}")
-            return log_growth_rate
+            return utility
 
         current_player = self.env.get_player_id()
 
@@ -190,13 +187,12 @@ class ICM_EA_MCCFR_Agent():
         
         # Calculate regret for the sampled action
         for action in legal_actions:
-            if action in action_utilities:
-                action_prob = action_probs[action]
-                regret = counterfactual_prob * (action_utilities.get(action)[current_player]
-                        - player_state_utility)
-                self.regrets[obs][action] += regret
-                # print(f'regret of action {action} is {regret}')
-                self.average_policy[obs][action] += self.iteration * player_prob * action_prob
+            action_prob = action_probs[action]
+            regret = counterfactual_prob * (action_utilities.get(action)[current_player]
+                    - player_state_utility)
+            self.regrets[obs][action] += regret
+            # print(f'regret of action {action} is {regret}')
+            self.average_policy[obs][action] += self.iteration * player_prob * action_prob
 
         return state_utility
 
