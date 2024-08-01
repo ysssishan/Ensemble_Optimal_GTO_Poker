@@ -116,21 +116,15 @@ class NonICM_EA_MCCFR_Agent():
             # Get end-game chipstack for all players
             pre_chipstacks = self.chipstack_pair
             end_chipstacks = self.update_chipstacks()        
-            # Calculate the growth rate relative to the initial chipstack
-            growth_rate = end_chipstacks / pre_chipstacks
-            growth_rate[growth_rate <= 0] = 1e-10
-            log_growth_rate = np.log(growth_rate)
-            # print(f"log growth rate {log_growth_rate}")
-            return log_growth_rate
+            utility = end_chipstacks - pre_chipstacks
+            return utility
 
         current_player = self.env.get_player_id()
 
-        action_utilities = {}
-        state_utility = np.zeros(self.env.num_players)
         obs, legal_actions = self.get_state(current_player)
         action_probs = self.action_probs(obs, legal_actions, self.policy)
 
-        # Initialize state utility for MCCFR
+        # Sample an action using epsilon-greedy strategy
         sampled_action = self.sample_action(legal_actions, action_probs, epsilon=0.6)
         action_prob = action_probs[sampled_action]
         new_probs = probs.copy()
@@ -141,39 +135,40 @@ class NonICM_EA_MCCFR_Agent():
         utility = self.simulate_game(new_probs, player_id)
         self.env.step_back()
 
-        state_utility += action_prob * utility
-        action_utilities[sampled_action] = utility
+        if current_player != player_id:
+            return utility
 
-        if not current_player == player_id:
-            return state_utility
+        # Calculate the player state utility as the weighted average of action utilities
+        player_state_utility = 0
+        for action in legal_actions:
+            if action != sampled_action:
+                self.env.step(action)
+                action_utility = self.simulate_game(probs, player_id)
+                self.env.step_back()
+                player_state_utility += action_probs[action] * action_utility[current_player]
+
+        player_state_utility += action_prob * utility[current_player]
 
         # Update regret and average policy
         if obs not in self.state_utilities:
             self.state_utilities[obs] = []  # Initialize state utility list for the current state
-        self.state_utilities[obs].append(state_utility)
+        self.state_utilities[obs].append(utility)
 
-        # Calculate regret and update average policy
         player_prob = probs[current_player]
         counterfactual_prob = (np.prod(probs[:current_player]) *
-                                np.prod(probs[current_player + 1:]))
-        player_state_utility = state_utility[current_player]
+                            np.prod(probs[current_player + 1:]))
 
         if obs not in self.regrets:
             self.regrets[obs] = np.zeros(self.env.num_actions)
         if obs not in self.average_policy:
             self.average_policy[obs] = np.zeros(self.env.num_actions)
-        
-        # Calculate regret for the sampled action
-        for action in legal_actions:
-            if action in action_utilities:
-                action_prob = action_probs[action]
-                regret = counterfactual_prob * (action_utilities.get(action)[current_player]
-                        - player_state_utility)
-                self.regrets[obs][action] += regret
-                # print(f'regret of action{action} is {regret}')
-                self.average_policy[obs][action] += self.iteration * player_prob * action_prob
 
-        return state_utility
+        # Calculate regret for the sampled action
+        regret = counterfactual_prob * (utility[current_player] - player_state_utility)
+        self.regrets[obs][sampled_action] += regret
+        self.average_policy[obs][sampled_action] += self.iteration * player_prob * action_prob
+
+        return utility
 
     """Monte Carlo Sample an action based on the action probabilities"""
     def sample_action(self, legal_actions, action_probs, epsilon=0.6):

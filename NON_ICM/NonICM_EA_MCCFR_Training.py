@@ -42,7 +42,7 @@ env = LeducholdemEnv(
 nonicm_ea_mccfr_agent = NonICM_EA_MCCFR_Agent(env, init_chipstack_pair=np.array([1000.0, 1000.0]),small_blind_multiplier=2)
 
 # Train CFR Agent
-num_iterations = 10000
+num_iterations = 1000
 train(nonicm_ea_mccfr_agent, num_iterations)
 
 # Save
