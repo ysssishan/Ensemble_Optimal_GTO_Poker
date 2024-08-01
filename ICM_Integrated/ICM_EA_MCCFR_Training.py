@@ -82,15 +82,4 @@ with open('./icm_ea_mccfr_agent/average_policy.pkl', 'rb') as f:
 average_policy_df = pd.DataFrame(list(average_policy_data.items()), columns=['Key', 'Average policy [Call, Raise, Fold, Check]'])
 average_policy_df.head(10)
 
-print(policy_df.loc[2]['Obs'])
-# %%
-print(policy_df.loc[2]['Probability [Call, Raise, Fold, Check]'])
-# %%
-
-print(len(average_policy_df.head(10)))
-# %%
-
-print(policy_df)
-# %%
-
 # %%
