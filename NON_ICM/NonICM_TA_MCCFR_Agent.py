@@ -89,9 +89,10 @@ class NonICM_TA_MCCFR_Agent():
                     self.chipstack_pair = self.update_chipstacks()
                     # Update tournament and increasing blind setting for next hand
                     # Specifically for multi-stage games/repeated games/tournaments
-                    self.env.game.small_blind *= 2
-                    self.env.game.big_blind = 2 * self.env.game.small_blind
-                    self.env.raise_amount = self.env.game.big_blind   
+                    if self.hands % 10 == 0:
+                        self.env.game.small_blind *= 2
+                        self.env.game.big_blind = 2 * self.env.game.small_blind
+                        self.env.raise_amount = self.env.game.big_blind   
 
                 # Update the policy based on the simulations       
                 self.update_policy()
