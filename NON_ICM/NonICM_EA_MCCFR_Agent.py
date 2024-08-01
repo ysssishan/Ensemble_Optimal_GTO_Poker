@@ -53,7 +53,7 @@ class NonICM_EA_MCCFR_Agent():
         all_chipstacks_pos = all(player_chipstack > 0 for player_chipstack in self.chipstack_pair)
         
         # Check if all players' chipstacks are above or equal to the big blind
-        all_chipstacks_above_big_blind = all(player_chipstack >= self.env.game.big_blind for player_chipstack in self.chipstack_pair)
+        all_chipstacks_above_big_blind = all(player_chipstack >= self.env.game.big_blind*2 for player_chipstack in self.chipstack_pair)
         
         return all_chipstacks_pos and all_chipstacks_above_big_blind
 
@@ -88,11 +88,10 @@ class NonICM_EA_MCCFR_Agent():
                     # Update chipstack
                     self.chipstack_pair = self.update_chipstacks()
                     # Update tournament and increasing blind setting for next hand
-                    # Specifically for multi-stage games/repeated games/tournaments
-                    if self.hands % 10 == 0:    
-                        self.env.game.small_blind *= 2
-                        self.env.game.big_blind = 2 * self.env.game.small_blind
-                        self.env.raise_amount = self.env.game.big_blind   
+                    # Specifically for multi-stage games/repeated games/tournaments  
+                    self.env.game.small_blind *= self.small_blind_multiplier
+                    self.env.game.big_blind = 2 * self.env.game.small_blind
+                    self.env.raise_amount = self.env.game.big_blind   
 
                 # Update the policy based on the simulations       
                 self.update_policy()

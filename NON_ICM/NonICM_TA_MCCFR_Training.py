@@ -24,6 +24,7 @@ def train(agent, num_iterations):
             agent.reset_chipstack()
             agent.env.game.small_blind = 1
             agent.env.game.big_blind = 2 * agent.env.game.small_blind
+            agent.env.game.raise_amount = agent.env.game.big_blind
             
             pbar.set_postfix({"Iteration": i + 1}, refresh=True)
             pbar.update(1)
@@ -39,10 +40,10 @@ env = LeducholdemEnv(
             'seed':42})
 
 # Creat CFR Agent 
-nonicm_ta_mccfr_agent = NonICM_TA_MCCFR_Agent(env, init_chipstack_pair=np.array([1000.0, 1000.0]),small_blind_multiplier=2)
+nonicm_ta_mccfr_agent = NonICM_TA_MCCFR_Agent(env, init_chipstack_pair=np.array([1000.0, 1000.0]),small_blind_multiplier=1.1)
 
 # Train CFR Agent
-num_iterations = 2000
+num_iterations = 1000
 train(nonicm_ta_mccfr_agent, num_iterations)
 
 # Save

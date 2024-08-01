@@ -289,13 +289,13 @@ class LeducholdemEnv:
         public_card = state['public_card']
         hand = state['hand']
         
-        obs = np.zeros(8)
+        obs = np.zeros(6)
         obs[self.card2index[hand]] = 1
         if public_card:
             obs[self.card2index[public_card]+3] = 1
         total_chips = sum(state['all_chips'])
-        obs[6] = state['my_chips'] / total_chips
-        obs[7] = (total_chips - state['my_chips']) / total_chips
+        # obs[6] = round(state['my_chips'] / total_chips,2)
+        # obs[7] = round((total_chips - state['my_chips']) / total_chips,2)
 
         extracted_state['obs'] = obs
         extracted_state['raw_obs'] = state

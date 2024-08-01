@@ -56,7 +56,7 @@ class ICM_TA_MCCFR_Agent():
         all_chipstacks_pos = all(player_chipstack > 0 for player_chipstack in self.chipstack_pair)
         
         # Check if all players' chipstacks are above or equal to the big blind
-        all_chipstacks_above_big_blind = all(player_chipstack >= self.env.game.big_blind for player_chipstack in self.chipstack_pair)
+        all_chipstacks_above_big_blind = all(player_chipstack >= self.env.game.big_blind*2 for player_chipstack in self.chipstack_pair)
         
         # Check if the current game count is less than the maximum allowed games
         within_max_games_limit = self.hands < self.max_hands

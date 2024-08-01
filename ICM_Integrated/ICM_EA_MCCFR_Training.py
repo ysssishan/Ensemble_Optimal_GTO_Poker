@@ -43,7 +43,7 @@ env = LeducholdemEnv(
 # Creat CFR Agent 
 icm_ea_mccfr_agent = ICM_EA_MCCFR_Agent(env, 
                                         init_chipstack_pair=np.array([1000.0, 1000.0]), 
-                                        small_blind_multiplier=2
+                                        small_blind_multiplier=1.1
                                         )
 
 # Train CFR Agent

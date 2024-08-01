@@ -62,11 +62,11 @@ class PassiveAgent(object):
             total_prob = 0.7
             for action in passive_actions:
                 if action in legal_actions:
-                    probs[action] = total_prob / len(passive_actions)
-            remaining_prob = 1 - total_prob
+                    probs[action] = total_prob / 2
+     
             for action in legal_actions:
                 if action not in passive_actions:
-                    probs[action] = remaining_prob / (len(legal_actions) - len(passive_actions))
+                    probs[action] = 0.3 / (len(legal_actions) - len(passive_actions))
         else:
             for action in legal_actions:
                 probs[action] = 1 / len(legal_actions)
